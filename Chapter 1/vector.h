@@ -1,4 +1,4 @@
-// This module contains vector ADT and its basic functions
+// This module contains vector ADT and its documentations
 
 // times: n is the dimension of the vector
 
@@ -8,7 +8,7 @@ struct vector;
 
 // vector_create(l, arr) creates a new vector with the specified parameters
 // requires: l > 0
-//           the length of arr = l
+//           the length of arr = l (not asserted)
 // effects: allocates memory (client must call vector_destroy)
 // time: O(1)
 struct vector *vector_create(int l, int *arr);
@@ -44,7 +44,7 @@ struct vector *scale_mult(int num, const struct vector *v);
 // time: O(n of v)
 void print_vector(const struct vector *v);
 
-// stack_destroy(ss) frees all memory for ss (including any strings)
-// effects: ss is no longer valid
-// time: O(n)
+// stack_destroy(v) frees all memory for v
+// effects: v is no longer valid
+// time: O(1)
 void vector_destroy(struct vector *v);

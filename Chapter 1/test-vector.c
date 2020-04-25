@@ -1,6 +1,7 @@
+// This is a simple test for vector module
+
+#include "vector.h"
 #include <assert.h>
-#include <vector.c>
-#include <vector.h>
 
 int main(void) {
     int a[5] = {1, 2, 3, 4, 5};

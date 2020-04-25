@@ -1,8 +1,8 @@
+#include "vector.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <vector.h>
 
 // This is the implementation for vector
 // See vector.h for documentation of functions
