@@ -13,6 +13,11 @@ struct vector;
 // time: O(1)
 struct vector *vector_create(int l, int *arr);
 
+// get_dimension(v) returns the diemnsion of the vector v
+// requires: v is not a NULL pointer
+// time: O(1)
+int get_dimension(const struct vector *v);
+
 // vectors_are_equal(v1, v2) checks whether v1 and v2 have the same length and have the same content
 // requires: v1 and v2 are not NULL pointers
 // time: O(n of v1)
