@@ -1,5 +1,5 @@
 // This module contains set of vectors ADT and its documentations
-// Note: functions that determine linear independence can be found in chapter 3
+// Note: functions that determine linear independence can be found in chapter 2
 
 // times: n is the number of vectors in the set
 
