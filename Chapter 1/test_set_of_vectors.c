@@ -5,10 +5,10 @@
 
 int main(void) {
     // a set of 2D vectors
-    int a[2] = {1, 2};
-    int b[2] = {3, 4};
-    int c[2] = {5, 6};
-    int d[2] = {7, 8};
+    double a[2] = {1, 2};
+    double b[2] = {3, 4};
+    double c[2] = {5, 6};
+    double d[2] = {7, 8};
     struct vector *v1 = vector_create(2, a);
     struct vector *v2 = vector_create(2, b);
     struct vector *v3 = vector_create(2, c);
@@ -50,9 +50,9 @@ int main(void) {
     // print_sov(s1);
 
     // a set of 3D vectors
-    int e[3] = {0, 0, 0};
-    int f[3] = {-1, 0, 1};
-    int g[3] = {10, 20, 30};
+    double e[3] = {0, 0, 0};
+    double f[3] = {-1, 0, 1};
+    double g[3] = {10, 20, 30};
     struct vector *v5 = vector_create(3, e);
     struct vector *v6 = vector_create(3, f);
     struct vector *v7 = vector_create(3, g);

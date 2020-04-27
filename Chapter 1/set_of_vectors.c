@@ -1,6 +1,5 @@
 #include "set_of_vectors.h"
 #include <assert.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -51,7 +50,7 @@ bool contains_vector(const struct vector *v, const struct sov *s) {
     assert(s);
     struct node *temp = s->vectors;
     for (int i = 0; i < s->num_vectors; i++) {
-        if (vectors_are_equal(v, temp->value)) {
+        if (vectors_equal(v, temp->value)) {
             return true;
         }
         temp = temp->next;
@@ -110,7 +109,7 @@ bool remove_from_set(const struct vector *v, struct sov *s) {
     assert(v);
     assert(s);
     assert(s->num_vectors);
-    if (vectors_are_equal(s->vectors->value, v)) {
+    if (vectors_equal(s->vectors->value, v)) {
         s->num_vectors -= 1;
         struct node *temp = s->vectors;
         s->vectors = s->vectors->next;
@@ -119,7 +118,7 @@ bool remove_from_set(const struct vector *v, struct sov *s) {
     }
 
     struct node *prev_node = s->vectors;
-    while (prev_node->next && !vectors_are_equal(v, prev_node->next->value)) {
+    while (prev_node->next && !vectors_equal(v, prev_node->next->value)) {
         prev_node = prev_node->next;
     }
     if (prev_node->next == NULL) {

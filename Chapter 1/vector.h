@@ -11,17 +11,23 @@ struct vector;
 //           the dimension of arr = l (not asserted)
 // effects: allocates memory (client must call vector_destroy)
 // time: O(1)
-struct vector *vector_create(int l, int *arr);
+struct vector *vector_create(int l, double *arr);
 
-// get_dimension(v) returns the diemnsion of the vector v
+// get_dimension(v) returns the dimension of the vector v
 // requires: v is not a NULL pointer
 // time: O(1)
 int get_dimension(const struct vector *v);
 
-// vectors_are_equal(v1, v2) checks whether v1 and v2 have the same dimension and have the same content
+// get_value(pos, v) returns the number at a given position of a vector
+// require: pos >= 0
+//          pos < v->dimension
+// time: O(1)
+double get_value(int pos, const struct vector *v);
+
+// vectors_equal(v1, v2) checks whether v1 and v2 have the same dimension and have the same content
 // requires: v1 and v2 are not NULL pointers
 // time: O(n of v1)
-bool vectors_are_equal(const struct vector *v1, const struct vector *v2);
+bool vectors_equal(const struct vector *v1, const struct vector *v2);
 
 // add(v1, v2) returns a vector with the result of adding v1 and v2
 // requires: v1 and v2 are not NULL pointers
@@ -41,13 +47,13 @@ struct vector *subtract(const struct vector *v1, const struct vector *v2);
 // requires: v is not a NULL pointer
 // effects: allocates memory (client must call vector_destroy)
 // time: O(n of v)
-struct vector *scale_mult(int num, const struct vector *v);
+struct vector *scale_mult(double num, const struct vector *v);
 
 // dot_product(v1, v2) returns the dot product of the two vectors
 // requires: v1 and v2 are not NULL pointers
 //           v1 and v2 have the same dimension
 // time: O(n)
-int dot_product(const struct vector *v1, const struct vector *v2);
+double dot_product(const struct vector *v1, const struct vector *v2);
 
 // norm(v) returns the norm or the length of the vector
 // requires: v is not a NULL pointer

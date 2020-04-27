@@ -1,7 +1,6 @@
 #include "vector.h"
 #include <assert.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,14 +9,14 @@
 
 struct vector {
     int dimension;
-    int *a;
+    double *a;
 };
 
-struct vector *vector_create(int l, int *arr) {
+struct vector *vector_create(int l, double *arr) {
     assert(l > 0);
     struct vector *v = malloc(sizeof(struct vector));
     v->dimension = l;
-    v->a = malloc(v->dimension * sizeof(int));
+    v->a = malloc(v->dimension * sizeof(double));
     for (int i = 0; i < v->dimension; ++i) {
         v->a[i] = arr[i];
     }
@@ -29,7 +28,14 @@ int get_dimension(const struct vector *v) {
     return v->dimension;
 }
 
-bool vectors_are_equal(const struct vector *v1, const struct vector *v2) {
+double get_value(int pos, const struct vector *v) {
+    assert(v);
+    assert(pos >= 0);
+    assert(pos < v->dimension);
+    return v->a[pos];
+}
+
+bool vectors_equal(const struct vector *v1, const struct vector *v2) {
     assert(v1);
     assert(v2);
     if (v1->dimension == v2->dimension) {
@@ -49,7 +55,7 @@ struct vector *add(const struct vector *v1, const struct vector *v2) {
     assert(v1);
     assert(v2);
     assert(v1->dimension == v2->dimension);
-    int *arr = malloc(v1->dimension * sizeof(int));
+    double *arr = malloc(v1->dimension * sizeof(double));
     for (int i = 0; i < v1->dimension; ++i) {
         arr[i] = v1->a[i] + v2->a[i];
     }
@@ -62,7 +68,7 @@ struct vector *subtract(const struct vector *v1, const struct vector *v2) {
     assert(v1);
     assert(v2);
     assert(v1->dimension == v2->dimension);
-    int *arr = malloc(v1->dimension * sizeof(int));
+    double *arr = malloc(v1->dimension * sizeof(double));
     for (int i = 0; i < v1->dimension; ++i) {
         arr[i] = v1->a[i] - v2->a[i];
     }
@@ -71,9 +77,9 @@ struct vector *subtract(const struct vector *v1, const struct vector *v2) {
     return v;
 }
 
-struct vector *scale_mult(int num, const struct vector *v) {
+struct vector *scale_mult(double num, const struct vector *v) {
     assert(v);
-    int *arr = malloc(v->dimension * sizeof(int));
+    double *arr = malloc(v->dimension * sizeof(double));
     for (int i = 0; i < v->dimension; ++i) {
         arr[i] = v->a[i] * num;
     }
@@ -82,11 +88,11 @@ struct vector *scale_mult(int num, const struct vector *v) {
     return temp;
 }
 
-int dot_product(const struct vector *v1, const struct vector *v2) {
+double dot_product(const struct vector *v1, const struct vector *v2) {
     assert(v1);
     assert(v2);
     assert(v1->dimension == v2->dimension);
-    int result = 0;
+    double result = 0;
     for (int i = 0; i < v1->dimension; i++) {
         result += v1->a[i] * v2->a[i];
     }
@@ -95,7 +101,7 @@ int dot_product(const struct vector *v1, const struct vector *v2) {
 
 double norm(const struct vector *v) {
     assert(v);
-    int sum = 0;
+    double sum = 0;
     sum = dot_product(v, v);
     return sqrt(sum);
 }
@@ -119,9 +125,9 @@ struct vector *cross_product(const struct vector *v1, const struct vector *v2) {
     assert(v2);
     assert(v1->dimension == 3);
     assert(v2->dimension == 3);
-    int temp[3] = {v1->a[1] * v2->a[2] - v1->a[2] * v2->a[1],
-                   v1->a[2] * v2->a[0] - v1->a[0] * v2->a[2],
-                   v1->a[0] * v2->a[1] - v1->a[1] * v2->a[0]};
+    double temp[3] = {v1->a[1] * v2->a[2] - v1->a[2] * v2->a[1],
+                      v1->a[2] * v2->a[0] - v1->a[0] * v2->a[2],
+                      v1->a[0] * v2->a[1] - v1->a[1] * v2->a[0]};
     return vector_create(3, temp);
 }
 
@@ -134,13 +140,27 @@ struct vector *normal_vector(const struct vector *v1, const struct vector *v2) {
     return normal;
 }
 
+struct vector *proj(const struct vector *v1, const struct vector *v2) {
+    assert(v1);
+    assert(v2);
+    assert(norm(v2));
+    return scale_mult(dot_product(v1, v2) / pow(norm(v2), 2), v2);
+}
+
+struct vector *perp(const struct vector *v1, const struct vector *v2) {
+    assert(v1);
+    assert(v2);
+    assert(norm(v2));
+    return subtract(v1, proj(v1, v2));
+}
+
 void print_vector(const struct vector *v) {
     assert(v);
     printf("length: %d\n[", v->dimension);
     for (int i = 0; i < v->dimension - 1; ++i) {
-        printf("%d ", v->a[i]);
+        printf("%.2f ", v->a[i]);
     }
-    printf("%d]\n", v->a[v->dimension - 1]);
+    printf("%.2f]\n", v->a[v->dimension - 1]);
 }
 
 void vector_destroy(struct vector *v) {

@@ -2,7 +2,6 @@
 
 #include "scalar_equation_of_plane.h"
 #include <assert.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,18 +9,19 @@
 // See scalar_equation_of_plane.h for documentation of functions
 
 struct seop {
-    int x1;
-    int x2;
-    int x3;
-    int c;
+    double x1;
+    double x2;
+    double x3;
+    double c;
+    struct vector *n;
 };
 
 // gcf(x, y) returns the greatest common factor of two numbers
 // time: O(x)
 
-static int gcf(int x, int y) {
+static double gcf(int x, int y) {
     int factor = 1;
-    int min;
+    double min;
     if (abs(x) >= abs(y)) {
         min = abs(y);
     } else {
@@ -35,20 +35,21 @@ static int gcf(int x, int y) {
     return factor;
 }
 
-struct seop *seop_create(int x, int y, int z, int d) {
+struct seop *seop_create(double x, double y, double z, double d) {
     struct seop *s = malloc(sizeof(struct seop));
     int temp = gcf(gcf(x, y), gcf(z, d));
     s->x1 = x / temp;
     s->x2 = y / temp;
     s->x3 = z / temp;
     s->c = d / temp;
+    double a[3] = {s->x1, s->x2, s->x3};
+    s->n = vector_create(3, a);
     return s;
 }
 
 struct vector *get_normal_vector(const struct seop *s) {
     assert(s);
-    int temp[3] = {s->x1, s->x2, s->x3};
-    return vector_create(3, temp);
+    return s->n;
 }
 
 struct seop *vector_to_scalar(const struct vector *v1, const struct vector *v2, const struct vector *v3) {
@@ -71,13 +72,28 @@ bool is_point_on_plane(const struct vector *v, const struct seop *s) {
     return (get_value(0, v) * s->x1 + get_value(1, v) * s->x2 + get_value(2, v) * s->x3) == s->c;
 }
 
+struct vector *proj_onto_plane(const struct vector *v, const struct seop *s) {
+    assert(v);
+    assert(s);
+    assert(norm(s->n));
+    return perp(v, s->n);
+}
+
+struct vector *perp_onto_plane(const struct vector *v, const struct seop *s) {
+    assert(v);
+    assert(s);
+    assert(norm(s->n));
+    return proj(v, s->n);
+}
+
 void print_seop(const struct seop *s) {
     assert(s);
     printf("scalar equation of a plane:\n");
-    printf("%dx + %dy + %dz = %d\n", s->x1, s->x2, s->x3, s->c);
+    printf("%.2fx + %.2fy + %.2fz = %.2f\n", s->x1, s->x2, s->x3, s->c);
 }
 
 void seop_destroy(struct seop *s) {
     assert(s);
+    vector_destroy(s->n);
     free(s);
 }
