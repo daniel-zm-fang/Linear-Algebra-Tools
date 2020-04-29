@@ -10,17 +10,17 @@
 struct matrix {
     int row;
     int col;
-    bool augmented;
+    int augmented_col;
     int max_row;
     int max_col;
     double **data;
 };
 
-struct matrix *matrix_create(bool is_augmented) {
+struct matrix *matrix_create() {
     struct matrix *m = malloc(sizeof(struct matrix));
     m->row = 0;
     m->col = 0;
-    m->augmented = is_augmented;
+    m->augmented_col = 0;
     m->max_row = 1;
     m->max_col = 1;
     m->data = malloc(m->max_row * sizeof(double *));
@@ -72,6 +72,13 @@ bool is_zero_matrix(const struct matrix *m) {
     return true;
 }
 
+void change_augmented_col(int aug_col, struct matrix *m) {
+    assert(m);
+    assert(aug_col >= 0);
+    assert(aug_col < m->col);
+    m->augmented_col = aug_col;
+}
+
 void add_row(const struct vector *v, struct matrix *m) {
     assert(v);
     assert(m);
@@ -79,6 +86,7 @@ void add_row(const struct vector *v, struct matrix *m) {
         m->col = get_dimension(v);
         m->max_col = m->col;
         m->max_row = 1;
+        m->row += 1;
         for (int i = 0; i < m->row; ++i) {
             m->data[i] = realloc(m->data[i], m->max_col * sizeof(double));
         }
@@ -97,8 +105,8 @@ void add_row(const struct vector *v, struct matrix *m) {
         for (int i = 0; i < m->col; ++i) {
             m->data[m->row][i] = get_value(i, v);
         }
+        m->row += 1;
     }
-    m->row += 1;
 }
 
 void add_col(const struct vector *v, struct matrix *m) {
@@ -145,12 +153,33 @@ static void swap_rows(double *a, double *b, int n) {
     }
 }
 
+// zero_row(r, m) returns true if a specified row in the matrix contains all zero
+// requires: m is not a NULL pointer
+//           0 <= r < m->row
+// time:
+
+static bool zero_row(int r, const struct matrix *m) {
+    assert(m);
+    assert(r >= 0);
+    assert(r < m->row);
+    bool is_zero = true;
+    int count = m->augmented_col;
+    if (!m->augmented_col) {
+        count = m->col;
+    }
+    for (int j = 0; j < count; ++j) {
+        if (m->data[r][j]) {
+            is_zero = false;
+            break;
+        }
+    }
+    return is_zero;
+}
+
 void gauss_jordan_elimination(struct matrix *m) {
     assert(m);
-    if (is_zero_matrix(m)) {
-        return;
-    }
-    // step 1: find the first non-zero column
+    move_zero_rows_bottom(m);
+    // find the first non-zero column
     int nonzero_col = 0;
     bool flag = false;
     for (int i = 0; i < m->col; ++i) {
@@ -165,26 +194,102 @@ void gauss_jordan_elimination(struct matrix *m) {
             break;
         }
     }
-    // step 2: get a leading one in the top of the column
-    if (m->data[0][nonzero_col] != 1) {
-        // try to find a row with a leading one and swap with it
-        // check if there's already a leading one
-        bool swap_first_row = false;
-        for (int i = 0; i < m->row; ++i) {
-            if (m->data[i][nonzero_col] == 1) {
-                swap_rows(m->data[i], m->data[0], m->col);
-                swap_first_row = true;
-                break;
+    int curr_row = 0;
+    int stop_col = m->col;
+    if (m->augmented_col) {
+        stop_col = m->augmented_col;
+    }
+    while (nonzero_col < stop_col && curr_row < m->row && !zero_row(curr_row, m)) {
+        // get a leading one in the top of the column
+        if (m->data[curr_row][nonzero_col] != 1) {
+            // try to find a row with a leading one and swap with it
+            // check if there's already a leading one
+            bool swap_first_row = false;
+            for (int i = 0; i < m->row; ++i) {
+                if (m->data[i][nonzero_col] == 1) {
+                    swap_rows(m->data[i], m->data[curr_row], m->col);
+                    swap_first_row = true;
+                    break;
+                }
+            }
+            // if there is no row with a leading one
+            if (!swap_first_row) {
+                // if the top of the nonzero_col is 0, try swapping with other rows
+                if (m->data[curr_row][nonzero_col] == 0) {
+                    for (int i = curr_row + 1; i < m->row; ++i) {
+                        if (m->data[i][nonzero_col]) {
+                            swap_rows(m->data[i], m->data[curr_row], m->col);
+                            break;
+                        }
+                    }
+                }
+                // if swapping is unsuccessful
+                if (m->data[curr_row][nonzero_col] == 0) {
+                    // get to the next nonzero number in the row
+                    int count = 0;
+                    for (int i = nonzero_col + 1; i < stop_col; ++i) {
+                        if (m->data[curr_row][i]) {
+                            count = i - nonzero_col;
+                            break;
+                        }
+                    }
+                    if (count) {
+                        // reduce the coeffients of the current row
+                        double temp = m->data[curr_row][nonzero_col + count];
+                        for (int i = nonzero_col + count; i < stop_col; ++i) {
+                            m->data[curr_row][i] /= temp;
+                        }
+                    }
+                    nonzero_col += count;
+                    ;
+                    curr_row += 1;
+                    continue;
+                }
+                // now create a leading one in the top row
+                double temp = m->data[curr_row][nonzero_col];
+                for (int i = 0; i < m->col; ++i) {
+                    m->data[curr_row][i] /= temp;
+                }
             }
         }
-        if (!swap_first_row) {
+        // make all numbers besides the leading one into 0
+        for (int i = 0; i < m->row; ++i) {
+            double temp = m->data[i][nonzero_col] / m->data[curr_row][nonzero_col];
+            if (i < curr_row) {
+                for (int j = 0; j < m->col; ++j) {
+                    m->data[i][j] -= m->data[curr_row][j] * temp;
+                }
+            } else if (i != curr_row && m->data[i][nonzero_col]) {
+                for (int j = 0; j < m->col; ++j) {
+                    m->data[i][j] /= temp;
+                    m->data[i][j] -= m->data[curr_row][j];
+                }
+            }
+        }
+        nonzero_col += 1;
+        curr_row += 1;
+        move_zero_rows_bottom(m);
+    }
+}
+
+void move_zero_rows_bottom(struct matrix *m) {
+    int num_zero_rows = 0;
+    for (int i = 0; i < m->row - num_zero_rows; ++i) {
+        int bot_row = m->row - 1 - num_zero_rows;
+        if (i != bot_row && zero_row(i, m) && !zero_row(bot_row, m)) {
+            swap_rows(m->data[i], m->data[bot_row], m->col);
+            num_zero_rows += 1;
+        } else if (i != bot_row && !zero_row(i, m) && zero_row(bot_row, m) && i > 0 && zero_row(i - 1, m)) {
+            swap_rows(m->data[i], m->data[i - 1], m->col);
+            num_zero_rows += 1;
         }
     }
 }
 
 bool is_rref(const struct matrix *m) {
     assert(m);
-    return NULL;
+    bool rref = true;
+    return rref;
 }
 
 int solutions_exist(const struct matrix *m) {
@@ -210,12 +315,25 @@ bool matrix_equal(const struct matrix *m1, const struct matrix *m2) {
 
 void print_matrix(const struct matrix *m) {
     assert(m);
+    if (is_empty(m)) {
+        printf("| empty |\n");
+    }
     for (int i = 0; i < m->row; ++i) {
         printf("|");
         for (int j = 0; j < m->col - 1; ++j) {
-            printf("%8.2f", m->data[i][j]);
+            if (m->augmented_col == j && j) {
+                printf("|%8.2f", m->data[i][j]);
+            } else if (j + 1 == m->augmented_col) {
+                printf("%8.2f    ", m->data[i][j]);
+            } else {
+                printf("%8.2f", m->data[i][j]);
+            }
         }
-        printf("%8.2f|\n", m->data[i][m->col - 1]);
+        if (m->col - 1 == m->augmented_col) {
+            printf("|%8.2f    |\n", m->data[i][m->col - 1]);
+        } else {
+            printf("%8.2f    |\n", m->data[i][m->col - 1]);
+        }
     }
     printf("\n");
 }

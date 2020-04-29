@@ -7,10 +7,10 @@
 
 struct matrix;
 
-// matrix_create(is_augmented) creates a new empty matrix
+// matrix_create() creates a new empty matrix
 // effects: allocates memory (client must call matrix_destroy)
 // time: O(1)
-struct matrix *matrix_create(bool is_augmented);
+struct matrix *matrix_create();
 
 // get_row(r, m) returns a row of m at a specified location; returns NULL if the
 //  requested row does not exist
@@ -39,6 +39,14 @@ bool is_empty(const struct matrix *m);
 // time: O(n)
 bool is_zero_matrix(const struct matrix *m);
 
+// change_augmented_col(aug_col, m) changes the column where the augmented columns start
+// note: 0 augmented column indicates that the matrix is not augmented
+// requires: m is not a NULL pointer
+//           0 <= aug_col < m->col
+// effects: modifies *m
+// time: O(1)
+void change_augmented_col(int aug_col, struct matrix *m);
+
 // add_row(v, m) adds a row/linear equation to m
 // requires: v and m are not NULL pointers
 //           get_dimension(v) == m->col when matrix is not empty
@@ -61,6 +69,13 @@ void add_col(const struct vector *v, struct matrix *m);
 // effects: may modify *m
 // time:
 void gauss_jordan_elimination(struct matrix *m);
+
+// move_zero_rows_bottom(m) moves all the nonzero rows to the top and
+//  zero rows to the bottom (does not check augmented columns' values)
+// requires: m is not a NULL pointer
+// effects: may modify *m
+// time:
+void move_zero_rows_bottom(struct matrix *m);
 
 // is_rref(m) returns true if m is in reduced row echelon form (RREF)
 // requires: m is not a NULL pointer
