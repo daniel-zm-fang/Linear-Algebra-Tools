@@ -18,6 +18,17 @@ struct sov *sov_create();
 // time: O(1)
 bool is_set_empty(const struct sov *s);
 
+// is_set_span(s) returns true if set s is a span
+// requires: s is not a NULL pointer
+// time: O(1)
+bool is_set_span(const struct sov *s);
+
+// change_span(span, s) changes whether a set of vectors represents a span or not
+// requires: s is not a NULL pointer
+// effects: may modify *s
+// time: O(1)
+void change_span(bool span, struct sov *s);
+
 // contains_vector(v, s) returns true if s contains vector vector
 // requires: v and s are not NULL pointers
 // time: O(n)

@@ -7,6 +7,7 @@
 // See set_of_vectors.h for documentations
 
 struct sov {
+    bool is_span;
     int num_vectors;
     struct node *vectors;
 };
@@ -34,7 +35,13 @@ struct sov *sov_create() {
     struct sov *s = malloc(sizeof(struct sov));
     s->num_vectors = 0;
     s->vectors = NULL;
+    s->is_span = false;
     return s;
+}
+
+bool is_set_span(const struct sov *s) {
+    assert(s);
+    return s->is_span;
 }
 
 bool is_set_empty(const struct sov *s) {
@@ -43,6 +50,11 @@ bool is_set_empty(const struct sov *s) {
         return true;
     }
     return false;
+}
+
+void change_span(bool span, struct sov *s) {
+    assert(s);
+    s->is_span = span;
 }
 
 bool contains_vector(const struct vector *v, const struct sov *s) {
@@ -116,7 +128,6 @@ bool remove_from_set(const struct vector *v, struct sov *s) {
         free(temp);
         return true;
     }
-
     struct node *prev_node = s->vectors;
     while (prev_node->next && !vectors_equal(v, prev_node->next->value)) {
         prev_node = prev_node->next;

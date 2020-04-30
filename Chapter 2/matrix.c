@@ -140,7 +140,7 @@ void add_col(const struct vector *v, struct matrix *m) {
 // requires: a and b are not NULL pointers
 //           n > 0
 // effects: may modify *a and *b
-// time: O(1)
+// time: O(n)
 
 static void swap_rows(double *a, double *b, int n) {
     assert(a);
@@ -156,24 +156,22 @@ static void swap_rows(double *a, double *b, int n) {
 // zero_row(r, m) returns true if a specified row in the matrix contains all zero
 // requires: m is not a NULL pointer
 //           0 <= r < m->row
-// time:
+// time: O(number of columns)
 
 static bool zero_row(int r, const struct matrix *m) {
     assert(m);
     assert(r >= 0);
     assert(r < m->row);
-    bool is_zero = true;
-    int count = m->augmented_col;
-    if (!m->augmented_col) {
-        count = m->col;
+    int stop_col = m->augmented_col;
+    if (m->augmented_col == 0) {
+        stop_col = m->col;
     }
-    for (int j = 0; j < count; ++j) {
+    for (int j = 0; j < stop_col; ++j) {
         if (m->data[r][j]) {
-            is_zero = false;
-            break;
+            return false;
         }
     }
-    return is_zero;
+    return true;
 }
 
 void gauss_jordan_elimination(struct matrix *m) {
@@ -270,6 +268,14 @@ void gauss_jordan_elimination(struct matrix *m) {
         curr_row += 1;
         move_zero_rows_bottom(m);
     }
+    // convert all -0 to 0
+    for (int i = 0; i < m->row; ++i) {
+        for (int j = 0; j < m->col; ++j) {
+            if (m->data[i][j] == -0.0) {
+                m->data[i][j] = +0.0;
+            }
+        }
+    }
 }
 
 void move_zero_rows_bottom(struct matrix *m) {
@@ -288,23 +294,132 @@ void move_zero_rows_bottom(struct matrix *m) {
 
 bool is_rref(const struct matrix *m) {
     assert(m);
-    bool rref = true;
-    return rref;
+    // test 1: all nonzero rows must be above zero rows
+    int zero_row_start = m->row;
+    for (int i = 0; i < m->row; ++i) {
+        if (zero_row(i, m)) {
+            zero_row_start = i;
+            break;
+        }
+    }
+    for (int i = zero_row_start + 1; i < m->row; ++i) {
+        if (!zero_row(i, m)) {
+            return false;
+        }
+    }
+    // test 2: the first nonzero entry in each nonzero row is 1
+    int stop_col = m->col;
+    if (m->augmented_col) {
+        stop_col = m->augmented_col;
+    }
+    for (int i = 0; i < zero_row_start; ++i) {
+        bool seen_one = false;
+        for (int j = 0; j < stop_col; ++j) {
+            if (m->data[i][j] != 0 && m->data[i][j] != 1 && !seen_one) {
+                return false;
+            } else if (m->data[i][j] == 1) {
+                seen_one = true;
+                // test 3: a leading one is the only nonzero entry in its column
+                for (int k = 0; k < zero_row_start; ++k) {
+                    if (m->data[k][j] != 0 && k != i) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    // test 4: leading one each nonzero row is to the right of leading one in any row above it
+    int curr_leading_one_col = 0;
+    for (int i = 0; i < zero_row_start; ++i) {
+        for (int j = 0; j < stop_col; ++j) {
+            if (m->data[i][j] == 1 && j > curr_leading_one_col) {
+                curr_leading_one_col = j;
+                break;
+            }
+        }
+    }
+    return true;
 }
 
-int solutions_exist(const struct matrix *m) {
+int get_rank(const struct matrix *m) {
     assert(m);
-    return 0;
+    assert(is_rref(m));
+    int rank = 0;
+    for (int i = 0; i < m->row; ++i) {
+        if (zero_row(i, m)) {
+            return rank;
+        }
+        rank += 1;
+    }
+    return rank;
 }
 
-struct vector *find_unique_solution(const struct matrix *m) {
+int get_free_var(const struct matrix *m) {
     assert(m);
-    return NULL;
+    assert(is_rref(m));
+    int stop_col = m->col;
+    if (m->augmented_col) {
+        stop_col = m->augmented_col;
+    }
+    return stop_col - get_rank(m);
 }
 
-struct sov *find_solution_system(const struct matrix *m) {
+// get_solution(m) returns a set of vectors as the solution of the matrix
+// requires: m is not NULL pointer
+//           m must be consistent (not asserted)
+// effects: allocates memory (client must call sov_destroy)
+// time:
+
+static struct sov *get_solution(const struct matrix *m) {
     assert(m);
-    return NULL;
+    assert(is_rref(m));
+    if (m->augmented_col) {
+        int stop_col = m->col;
+        if (m->augmented_col) {
+            stop_col = m->augmented_col;
+        }
+        struct sov *s = sov_create();
+        for (int i = stop_col; i < m->col; ++i) {
+            double *a = malloc(m->row * sizeof(double));
+            for (int j = 0; j < m->row; ++j) {
+                a[i] = m->data[j][i];
+            }
+            add_to_set(vector_create(m->row, a), s);
+        }
+        return s;
+    } else {
+        return NULL;
+    }
+}
+
+struct sov *find_solution(const struct matrix *m) {
+    assert(m);
+    assert(is_rref(m));
+    // check for inconsistency
+    for (int i = 0; i < m->row; i++) {
+        if (zero_row(i, m)) {
+            for (int j = m->augmented_col; j < m->col; j++) {
+                if (m->data[i][j] != 0) {
+                    return NULL;
+                }
+            }
+        }
+    }
+    int rank = get_rank(m);
+    int stop_col = m->col;
+    if (m->augmented_col) {
+        stop_col = m->augmented_col;
+    }
+    struct sov *s = get_solution(m);
+    if (rank == stop_col) {
+        // there exists a unique solution
+        change_span(false, s);
+        return s;
+    } else {
+        // there exists infinite solutions
+        change_span(true, s);
+        return s;
+    }
 }
 
 bool matrix_equal(const struct matrix *m1, const struct matrix *m2) {

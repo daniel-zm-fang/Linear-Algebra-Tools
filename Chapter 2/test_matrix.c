@@ -30,25 +30,23 @@ int main(void) {
     struct matrix *m1 = matrix_create();
     // print_matrix(m1);
     assert(is_empty(m1));
-
     add_row(v1, m1);
     assert(!is_empty(m1));
     struct vector *v4 = get_row(0, m1);
     assert(vectors_equal(v4, v1));
-
     add_row(v2, m1);
     add_row(v3, m1);
+    assert(!is_rref(m1));
     // print_matrix(m1);
-
     change_augmented_col(1, m1);
     // print_matrix(m1);
-
     struct vector *v5 = get_row(1, m1);
     assert(vectors_equal(v5, v2));
     struct vector *v7 = get_col(2, m1);
     // print_vector(v7);
-
     gauss_jordan_elimination(m1);
+    assert(get_rank(m1) == 1);
+    assert(get_free_var(m1) == 0);
     // print_matrix(m1);
 
     struct matrix *m2 = matrix_create();
@@ -59,27 +57,35 @@ int main(void) {
     add_col(v1, m2);
     add_col(v3, m2);
     // print_matrix(m2);
-
     gauss_jordan_elimination(m2);
+    assert(get_rank(m2) == 2);
+    assert(get_free_var(m2) == 1);
     // print_matrix(m2);
 
     struct matrix *m3 = matrix_create();
     add_col(v8, m3);
     add_col(v9, m3);
     add_col(v10, m3);
+    change_augmented_col(1, m3);
+    assert(is_rref(m3));
     // print_matrix(m3);
-
     gauss_jordan_elimination(m3);
+    is_rref(m3);
+    assert(get_rank(m3) == 0);
+    assert(get_free_var(m3) == 1);
     // print_matrix(m3);
 
     struct matrix *m4 = matrix_create();
     add_row(v11, m4);
     add_row(v12, m4);
     add_row(v13, m4);
+    assert(!is_rref(m4));
     // print_matrix(m4);
-
     gauss_jordan_elimination(m4);
     // print_matrix(m4);
+    assert(is_rref(m4));
+    assert(get_rank(m4) == 3);
+    assert(get_free_var(m4) == 2);
 
     struct matrix *m5 = matrix_create();
     add_row(v1, m5);
@@ -87,18 +93,25 @@ int main(void) {
     add_row(v1, m5);
     add_row(v8, m5);
     change_augmented_col(2, m5);
+    assert(!is_rref(m5));
     // print_matrix(m5);
-
     gauss_jordan_elimination(m5);
+    assert(is_rref(m5));
+    assert(get_rank(m5) == 1);
+    assert(get_free_var(m5) == 1);
     // print_matrix(m5);
 
     struct matrix *m6 = matrix_create();
     add_col(v11, m6);
     add_col(v12, m6);
     add_col(v13, m6);
-    print_matrix(m6);
+    assert(!is_rref(m6));
+    // print_matrix(m6);
     gauss_jordan_elimination(m6);
-    print_matrix(m6);
+    assert(is_rref(m6));
+    assert(get_rank(m6) == 3);
+    assert(get_free_var(m6) == 0);
+    // print_matrix(m6);
 
     matrix_destroy(m1);
     matrix_destroy(m2);
