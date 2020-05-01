@@ -30,6 +30,30 @@ struct matrix *matrix_create() {
     return m;
 }
 
+int num_rows(const struct matrix *m) {
+    assert(m);
+    return m->row;
+}
+
+int num_cols(const struct matrix *m) {
+    assert(m);
+    return m->col;
+}
+
+int num_aug_cols(const struct matrix *m) {
+    assert(m);
+    return m->augmented_col;
+}
+
+double matrix_get_val(int r, int c, const struct matrix *m) {
+    assert(m);
+    assert(0 <= r);
+    assert(r < m->row);
+    assert(0 <= c);
+    assert(c < m->col);
+    return m->data[r][c];
+}
+
 struct vector *get_row(int r, const struct matrix *m) {
     assert(m);
     assert(r >= 0);
@@ -50,7 +74,7 @@ struct vector *get_col(int c, const struct matrix *m) {
     for (int i = 0; i < m->row; i++) {
         a[i] = m->data[i][c];
     }
-    struct vector *temp = vector_create(m->col, a);
+    struct vector *temp = vector_create(m->row, a);
     return temp;
 }
 
@@ -91,7 +115,7 @@ void add_row(const struct vector *v, struct matrix *m) {
             m->data[i] = realloc(m->data[i], m->max_col * sizeof(double));
         }
         for (int i = 0; i < m->col; ++i) {
-            m->data[0][i] = get_value(i, v);
+            m->data[0][i] = vector_get_val(i, v);
         }
     } else {
         assert(get_dimension(v) == m->col);
@@ -103,7 +127,7 @@ void add_row(const struct vector *v, struct matrix *m) {
             }
         }
         for (int i = 0; i < m->col; ++i) {
-            m->data[m->row][i] = get_value(i, v);
+            m->data[m->row][i] = vector_get_val(i, v);
         }
         m->row += 1;
     }
@@ -119,7 +143,7 @@ void add_col(const struct vector *v, struct matrix *m) {
         m->data = realloc(m->data, m->max_row * sizeof(double *));
         for (int i = 0; i < m->row; ++i) {
             m->data[i] = malloc(sizeof(double));
-            m->data[i][0] = get_value(i, v);
+            m->data[i][0] = vector_get_val(i, v);
         }
     } else {
         assert(get_dimension(v) == m->row);
@@ -130,7 +154,7 @@ void add_col(const struct vector *v, struct matrix *m) {
             }
         }
         for (int i = 0; i < m->row; ++i) {
-            m->data[i][m->col] = get_value(i, v);
+            m->data[i][m->col] = vector_get_val(i, v);
         }
     }
     m->col += 1;
@@ -162,11 +186,7 @@ static bool zero_row(int r, const struct matrix *m) {
     assert(m);
     assert(r >= 0);
     assert(r < m->row);
-    int stop_col = m->augmented_col;
-    if (m->augmented_col == 0) {
-        stop_col = m->col;
-    }
-    for (int j = 0; j < stop_col; ++j) {
+    for (int j = 0; j < m->col - m->augmented_col; ++j) {
         if (m->data[r][j]) {
             return false;
         }
@@ -193,10 +213,7 @@ void gauss_jordan_elimination(struct matrix *m) {
         }
     }
     int curr_row = 0;
-    int stop_col = m->col;
-    if (m->augmented_col) {
-        stop_col = m->augmented_col;
-    }
+    int stop_col = m->col - m->augmented_col;
     while (nonzero_col < stop_col && curr_row < m->row && !zero_row(curr_row, m)) {
         // get a leading one in the top of the column
         if (m->data[curr_row][nonzero_col] != 1) {
@@ -308,10 +325,7 @@ bool is_rref(const struct matrix *m) {
         }
     }
     // test 2: the first nonzero entry in each nonzero row is 1
-    int stop_col = m->col;
-    if (m->augmented_col) {
-        stop_col = m->augmented_col;
-    }
+    int stop_col = m->col - m->augmented_col;
     for (int i = 0; i < zero_row_start; ++i) {
         bool seen_one = false;
         for (int j = 0; j < stop_col; ++j) {
@@ -357,11 +371,7 @@ int get_rank(const struct matrix *m) {
 int get_free_var(const struct matrix *m) {
     assert(m);
     assert(is_rref(m));
-    int stop_col = m->col;
-    if (m->augmented_col) {
-        stop_col = m->augmented_col;
-    }
-    return stop_col - get_rank(m);
+    return m->col - m->augmented_col - get_rank(m);
 }
 
 // get_solution(m) returns a set of vectors as the solution of the matrix
@@ -374,12 +384,8 @@ static struct sov *get_solution(const struct matrix *m) {
     assert(m);
     assert(is_rref(m));
     if (m->augmented_col) {
-        int stop_col = m->col;
-        if (m->augmented_col) {
-            stop_col = m->augmented_col;
-        }
         struct sov *s = sov_create();
-        for (int i = stop_col; i < m->col; ++i) {
+        for (int i = m->col - m->augmented_col; i < m->col; ++i) {
             double *a = malloc(m->row * sizeof(double));
             for (int j = 0; j < m->row; ++j) {
                 a[i] = m->data[j][i];
@@ -405,13 +411,8 @@ struct sov *find_solution(const struct matrix *m) {
             }
         }
     }
-    int rank = get_rank(m);
-    int stop_col = m->col;
-    if (m->augmented_col) {
-        stop_col = m->augmented_col;
-    }
     struct sov *s = get_solution(m);
-    if (rank == stop_col) {
+    if (get_rank(m) == m->col - m->augmented_col) {
         // there exists a unique solution
         change_span(false, s);
         return s;
@@ -436,19 +437,13 @@ void print_matrix(const struct matrix *m) {
     for (int i = 0; i < m->row; ++i) {
         printf("|");
         for (int j = 0; j < m->col - 1; ++j) {
-            if (m->augmented_col == j && j) {
-                printf("|%8.2f", m->data[i][j]);
-            } else if (j + 1 == m->augmented_col) {
-                printf("%8.2f    ", m->data[i][j]);
+            if (m->col == j + m->augmented_col + 1) {
+                printf("%8.2f    |", m->data[i][j]);
             } else {
                 printf("%8.2f", m->data[i][j]);
             }
         }
-        if (m->col - 1 == m->augmented_col) {
-            printf("|%8.2f    |\n", m->data[i][m->col - 1]);
-        } else {
-            printf("%8.2f    |\n", m->data[i][m->col - 1]);
-        }
+        printf("%8.2f    |\n", m->data[i][m->col - 1]);
     }
     printf("\n");
 }

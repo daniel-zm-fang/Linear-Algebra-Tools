@@ -60,16 +60,16 @@ struct seop *vector_to_scalar(const struct vector *v1, const struct vector *v2, 
     assert(get_dimension(v2) == 3);
     assert(get_dimension(v3) == 3);
     struct vector *n = normal_vector(v1, v2);
-    int d = get_value(0, n) * get_value(0, v3) +
-            get_value(1, n) * get_value(1, v3) +
-            get_value(2, n) * get_value(2, v3);
-    return seop_create(get_value(0, n), get_value(1, n), get_value(2, n), d);
+    int d = vector_get_val(0, n) * vector_get_val(0, v3) +
+            vector_get_val(1, n) * vector_get_val(1, v3) +
+            vector_get_val(2, n) * vector_get_val(2, v3);
+    return seop_create(vector_get_val(0, n), vector_get_val(1, n), vector_get_val(2, n), d);
 }
 
 bool is_point_on_plane(const struct vector *v, const struct seop *s) {
     assert(v);
     assert(s);
-    return (get_value(0, v) * s->x1 + get_value(1, v) * s->x2 + get_value(2, v) * s->x3) == s->c;
+    return (vector_get_val(0, v) * s->x1 + vector_get_val(1, v) * s->x2 + vector_get_val(2, v) * s->x3) == s->c;
 }
 
 struct vector *proj_onto_plane(const struct vector *v, const struct seop *s) {

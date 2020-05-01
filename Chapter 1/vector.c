@@ -28,7 +28,7 @@ int get_dimension(const struct vector *v) {
     return v->dimension;
 }
 
-double get_value(int pos, const struct vector *v) {
+double vector_get_val(int pos, const struct vector *v) {
     assert(v);
     assert(pos >= 0);
     assert(pos < v->dimension);
@@ -160,7 +160,7 @@ void print_vector(const struct vector *v) {
     for (int i = 0; i < v->dimension - 1; ++i) {
         printf("%.2f ", v->a[i]);
     }
-    printf("%.2f]\n", v->a[v->dimension - 1]);
+    printf("%.2f]\n\n", v->a[v->dimension - 1]);
 }
 
 void vector_destroy(struct vector *v) {

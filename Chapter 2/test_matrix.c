@@ -37,15 +37,15 @@ int main(void) {
     add_row(v2, m1);
     add_row(v3, m1);
     assert(!is_rref(m1));
-    // print_matrix(m1);
+    //print_matrix(m1);
     change_augmented_col(1, m1);
-    // print_matrix(m1);
+    //print_matrix(m1);
     struct vector *v5 = get_row(1, m1);
     assert(vectors_equal(v5, v2));
     struct vector *v7 = get_col(2, m1);
     // print_vector(v7);
     gauss_jordan_elimination(m1);
-    assert(get_rank(m1) == 1);
+    assert(get_rank(m1) == 2);
     assert(get_free_var(m1) == 0);
     // print_matrix(m1);
 
@@ -66,7 +66,7 @@ int main(void) {
     add_col(v8, m3);
     add_col(v9, m3);
     add_col(v10, m3);
-    change_augmented_col(1, m3);
+    change_augmented_col(2, m3);
     assert(is_rref(m3));
     // print_matrix(m3);
     gauss_jordan_elimination(m3);
@@ -92,7 +92,7 @@ int main(void) {
     add_row(v8, m5);
     add_row(v1, m5);
     add_row(v8, m5);
-    change_augmented_col(2, m5);
+    change_augmented_col(1, m5);
     assert(!is_rref(m5));
     // print_matrix(m5);
     gauss_jordan_elimination(m5);
