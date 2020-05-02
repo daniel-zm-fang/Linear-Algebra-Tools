@@ -23,11 +23,30 @@ bool is_set_empty(const struct sov *s);
 // time: O(1)
 bool is_set_span(const struct sov *s);
 
+// get_num_vector(s) returns the number of vectors in set s
+// requires: s is not a NULL pointer
+// time: O(1)
+int get_num_vector(const struct sov *s);
+
+// get_vector(pos, s) returns a vectors at a specified position of s
+// requires: s is not a NULL pointer
+// time: O(n)
+struct vector *get_vector(int pos, const struct sov *s);
+
 // change_span(span, s) changes whether a set of vectors represents a span or not
 // requires: s is not a NULL pointer
 // effects: may modify *s
 // time: O(1)
 void change_span(bool span, struct sov *s);
+
+// change_const_vector(v, s) changes the constant vector of a span
+// requires: v and s are not NULL pointers
+//           s is a span
+//           s is not empty
+//           v has the same dimension as s->dimension
+// effects: may modify *s
+// time: O(dimension of v)
+void change_const_vector(struct vector *v, struct sov *s);
 
 // contains_vector(v, s) returns true if s contains vector vector
 // requires: v and s are not NULL pointers
@@ -47,7 +66,7 @@ bool are_sets_equal(const struct sov *s1, const struct sov *s2);
 
 // add_to_set(v, s) adds vector v to the back of s
 // requires: v and s are not NULL pointers
-//           v has to have the same dimension as s->dimension
+//           v has the same dimension as s->dimension
 // effects: modifies s
 //          allocates memory (client must free when removing v)
 // time: O(1)

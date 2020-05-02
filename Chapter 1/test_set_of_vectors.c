@@ -15,6 +15,7 @@ int main(void) {
     struct vector *v4 = vector_create(2, d);
 
     struct sov *s1 = sov_create();
+    change_span(true, s1);
     // print_sov(s1);
 
     assert(is_set_empty(s1));
@@ -35,6 +36,7 @@ int main(void) {
     assert(are_sets_equal(s1, s2));
 
     struct sov *s3 = sov_create();
+    change_span(true, s3);
     add_to_set(v1, s3);
     add_to_set(v3, s3);
     add_to_set(v2, s3);
@@ -74,4 +76,12 @@ int main(void) {
     sov_destroy(s2);
     sov_destroy(s3);
     sov_destroy(s4);
+
+    vector_destroy(v1);
+    vector_destroy(v2);
+    vector_destroy(v3);
+    vector_destroy(v4);
+    vector_destroy(v5);
+    vector_destroy(v6);
+    vector_destroy(v7);
 }

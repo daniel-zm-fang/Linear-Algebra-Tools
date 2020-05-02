@@ -9,6 +9,7 @@
 struct sov {
     bool is_span;
     int num_vectors;
+    struct vector *const_vector;
     struct node *vectors;
 };
 
@@ -35,6 +36,7 @@ struct sov *sov_create() {
     struct sov *s = malloc(sizeof(struct sov));
     s->num_vectors = 0;
     s->vectors = NULL;
+    s->const_vector = NULL;
     s->is_span = false;
     return s;
 }
@@ -42,6 +44,23 @@ struct sov *sov_create() {
 bool is_set_span(const struct sov *s) {
     assert(s);
     return s->is_span;
+}
+
+int get_num_vector(const struct sov *s) {
+    assert(s);
+    return s->num_vectors;
+}
+
+struct vector *get_vector(int pos, const struct sov *s) {
+    assert(pos >= 0);
+    assert(pos < s->num_vectors);
+    int count = 0;
+    struct node *temp = s->vectors;
+    while (count < pos) {
+        count += 1;
+        temp = temp->next;
+    }
+    return temp->value;
 }
 
 bool is_set_empty(const struct sov *s) {
@@ -55,6 +74,29 @@ bool is_set_empty(const struct sov *s) {
 void change_span(bool span, struct sov *s) {
     assert(s);
     s->is_span = span;
+    if (!span) {
+        vector_destroy(s->const_vector);
+        s->const_vector = NULL;
+    }
+}
+
+void change_const_vector(struct vector *v, struct sov *s) {
+    assert(v);
+    assert(s);
+    assert(s->is_span);
+    assert(s->num_vectors);
+    assert(get_dimension(v) == get_dimension(s->vectors->value));
+    int length = get_dimension(v);
+    double *temp = malloc(length * sizeof(double));
+    for (int i = 0; i < length; ++i) {
+        temp[i] = vector_get_val(i, v);
+    }
+    if (s->const_vector) {
+        vector_destroy(s->const_vector);
+        s->const_vector = vector_create(length, temp);
+    } else {
+        s->const_vector = vector_create(length, temp);
+    }
 }
 
 bool contains_vector(const struct vector *v, const struct sov *s) {
@@ -84,8 +126,19 @@ static struct node *dup_nodes(const struct node *old_node) {
 struct sov *dup_sov(const struct sov *s) {
     assert(s);
     struct sov *new_s = sov_create();
+    new_s->is_span = s->is_span;
     new_s->num_vectors = s->num_vectors;
     new_s->vectors = dup_nodes(s->vectors);
+    if (s->const_vector) {
+        int length = get_dimension(s->const_vector);
+        double *temp = malloc(length * sizeof(double));
+        for (int i = 0; i < length; ++i) {
+            temp[i] = vector_get_val(i, s->const_vector);
+        }
+        new_s->const_vector = vector_create(length, temp);
+    } else {
+        new_s->const_vector = NULL;
+    }
     return new_s;
 }
 
@@ -93,6 +146,14 @@ bool are_sets_equal(const struct sov *s1, const struct sov *s2) {
     assert(s1);
     assert(s2);
     if (s1->num_vectors != s2->num_vectors) {
+        return false;
+    }
+    if (s1->is_span == s2->is_span) {
+        if (s1->const_vector && s2->const_vector &&
+            !vectors_equal(s1->const_vector, s2->const_vector)) {
+            return false;
+        }
+    } else {
         return false;
     }
     struct node *temp = s1->vectors;
@@ -144,15 +205,26 @@ bool remove_from_set(const struct vector *v, struct sov *s) {
 
 void print_sov(const struct sov *s) {
     assert(s);
-    printf("set info:\n");
-    printf("    number of vectors: %d\n", s->num_vectors);
+    if (s->is_span) {
+        printf("span\n");
+        if (s->const_vector) {
+            printf("constant vector:\n");
+            print_vector(s->const_vector);
+        } else {
+            printf("NULL constant vector\n");
+        }
+    } else {
+        printf("not a span\n");
+    }
+    printf("number of vectors: %d\n", s->num_vectors);
+    if (s->num_vectors == 0) {
+        printf("\n");
+    }
     struct node *temp = s->vectors;
     while (temp) {
-        printf("    ");
         print_vector(temp->value);
         temp = temp->next;
     }
-    printf("\n");
 }
 
 void sov_destroy(struct sov *s) {
@@ -165,5 +237,9 @@ void sov_destroy(struct sov *s) {
         free(curr_node);
         curr_node = next_node;
     }
+    if (s->const_vector) {
+        vector_destroy(s->const_vector);
+    }
     free(s);
+    s = NULL;
 }

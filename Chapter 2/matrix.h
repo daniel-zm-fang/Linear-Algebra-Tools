@@ -3,7 +3,6 @@
 // time: r = number of rows, c = number of columns
 
 #include "../Chapter 1/set_of_vectors.h"
-#include "../Chapter 1/vector.h"
 #include <stdbool.h>
 
 struct matrix;
@@ -86,6 +85,12 @@ void add_row(const struct vector *v, struct matrix *m);
 // time: O(r) [amoritized]
 void add_col(const struct vector *v, struct matrix *m);
 
+// matrix_copy(m) returns a deep copy of a given matrix
+// requires: m is not a NULL pointer
+// effects: allocates memory (client must call matrix_destroy)
+// time: O(r * c)
+struct matrix *matrix_copy(const struct matrix *m);
+
 // gauss_jordan_elimination(m) reduces a matrix to its RREF form using the
 //  Gauss-Jordan Elimination algorithm
 // requires: m is not a NULL pointer
@@ -121,6 +126,7 @@ int get_free_var(const struct matrix *m);
 //  if the matrix is consistent
 // requires: m is a NULL pointer
 //           m must be in RREF form
+//           m has maximum of 1 augmented column
 // effects: may allocate memory (client must call sov_destroy)
 // time:
 struct sov *find_solution(const struct matrix *m);

@@ -1,7 +1,5 @@
 #include "matrix_operations.h"
-#include "../Chapter 2/matrix.h"
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 // This is the implementation for matrix operations

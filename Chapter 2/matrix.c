@@ -1,6 +1,5 @@
 #include "matrix.h"
 #include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -160,6 +159,26 @@ void add_col(const struct vector *v, struct matrix *m) {
     m->col += 1;
 }
 
+struct matrix *matrix_copy(const struct matrix *m) {
+    assert(m);
+    struct matrix *new_m = malloc(sizeof(struct matrix));
+    new_m->row = m->row;
+    new_m->col = m->col;
+    new_m->augmented_col = m->augmented_col;
+    new_m->max_row = m->max_row;
+    new_m->max_col = m->max_col;
+    new_m->data = malloc(new_m->max_row * sizeof(double *));
+    for (int i = 0; i < m->max_row; ++i) {
+        new_m->data[i] = malloc(new_m->max_col * sizeof(double));
+    }
+    for (int i = 0; i < m->row; ++i) {
+        for (int j = 0; j < m->col; ++j) {
+            new_m->data[i][j] = m->data[i][j];
+        }
+    }
+    return new_m;
+}
+
 // swap_rows(a, b, n) swap the locations of two rowsof length n of a matrix
 // requires: a and b are not NULL pointers
 //           n > 0
@@ -180,7 +199,7 @@ static void swap_rows(double *a, double *b, int n) {
 // zero_row(r, m) returns true if a specified row in the matrix contains all zero
 // requires: m is not a NULL pointer
 //           0 <= r < m->row
-// time: O(number of columns)
+// time: O(c)
 
 static bool zero_row(int r, const struct matrix *m) {
     assert(m);
@@ -374,32 +393,51 @@ int get_free_var(const struct matrix *m) {
     return m->col - m->augmented_col - get_rank(m);
 }
 
-// get_solution(m) returns a set of vectors as the solution of the matrix
-// requires: m is not NULL pointer
-//           m must be consistent (not asserted)
-// effects: allocates memory (client must call sov_destroy)
-// time:
+// is_col_free_var(c, m) returns true if a specified column of a matrix is a free variable
+// requires: m is not a NULL pointer
+//           0 < c < m->col
+//           m is in
+// time: O(r * c)
 
-static struct sov *get_solution(const struct matrix *m) {
+static bool is_col_free_var(int c, const struct matrix *m) {
     assert(m);
+    assert(c >= 0);
+    assert(c < m->col);
     assert(is_rref(m));
-    if (m->augmented_col) {
-        struct sov *s = sov_create();
-        for (int i = m->col - m->augmented_col; i < m->col; ++i) {
-            double *a = malloc(m->row * sizeof(double));
-            for (int j = 0; j < m->row; ++j) {
-                a[i] = m->data[j][i];
+    bool one_exists = false;
+    int one_pos = -1;
+    int nonzero_count = 0;
+    for (int i = 0; i < m->row; ++i) {
+        if (m->data[i][c]) {
+            nonzero_count += 1;
+            if (nonzero_count == 2) {
+                return true;
             }
-            add_to_set(vector_create(m->row, a), s);
+            if (m->data[i][c] == 1) {
+                one_exists = true;
+                one_pos = i;
+            }
         }
-        return s;
+    }
+    if (one_exists) {
+        for (int i = 0; i < m->row; ++i) {
+            if (m->data[one_pos][i] == 1) {
+                if (i < c) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
     } else {
-        return NULL;
+        return true;
     }
 }
 
 struct sov *find_solution(const struct matrix *m) {
     assert(m);
+    assert(m->augmented_col == 0 || m->augmented_col == 1);
     assert(is_rref(m));
     // check for inconsistency
     for (int i = 0; i < m->row; i++) {
@@ -411,22 +449,70 @@ struct sov *find_solution(const struct matrix *m) {
             }
         }
     }
-    struct sov *s = get_solution(m);
-    if (get_rank(m) == m->col - m->augmented_col) {
-        // there exists a unique solution
-        change_span(false, s);
-        return s;
+    struct sov *s = sov_create();
+    int free_var = get_free_var(m);
+    if (m->augmented_col == 0) {
+        if (free_var == 0) {
+            // not augmented & unique solution
+            double *a = malloc(m->col * sizeof(double));
+            for (int i = 0; i < m->col; ++i) {
+                a[i] = 0;
+            }
+            add_to_set(vector_create(m->col, a), s);
+        } else {
+            // not augmented & infinite solutions
+            change_span(true, s);
+            for (int i = 0; i < m->col; ++i) {
+                if (is_col_free_var(i, m)) {
+                    double *a = malloc(m->col * sizeof(double));
+                    for (int j = 0; j < m->row; ++j) {
+                        a[j] = -1 * m->data[j][i];
+                    }
+                    a[i] = 1;
+                    add_to_set(vector_create(m->col, a), s);
+                }
+            }
+        }
     } else {
-        // there exists infinite solutions
-        change_span(true, s);
-        return s;
+        if (free_var == 0) {
+            // augmented & unique solution
+            add_to_set(get_col(m->col - 1, m), s);
+        } else {
+            // augmented & infinite solutions
+            for (int i = 0; i < m->col - 1; ++i) {
+                if (is_col_free_var(i, m)) {
+                    double *b = malloc((m->col - 1) * sizeof(double));
+                    for (int j = 0; j < m->row; ++j) {
+                        b[j] = -1 * m->data[j][i];
+                    }
+                    b[i] = 1;
+                    add_to_set(vector_create(m->col - 1, b), s);
+                }
+            }
+            change_span(true, s);
+            double *a = malloc((m->col - 1) * sizeof(double));
+            for (int i = 0; i < m->col - 1; ++i) {
+                if (i <= free_var) {
+                    a[i] = m->data[i][m->col - 1];
+                } else {
+                    a[i] = 0;
+                }
+            }
+            change_const_vector(vector_create(m->col - 1, a), s);
+        }
     }
+    return s;
 }
 
 bool matrix_equal(const struct matrix *m1, const struct matrix *m2) {
     assert(m1);
     assert(m2);
-    return NULL;
+    struct matrix *m1_rref = matrix_copy(m1);
+    struct matrix *m2_rref = matrix_copy(m2);
+    bool result = are_sets_equal(find_solution(m1_rref), find_solution(m2_rref));
+    matrix_destroy(m1_rref);
+    matrix_destroy(m2_rref);
+    return result;
 }
 
 void print_matrix(const struct matrix *m) {
@@ -450,10 +536,11 @@ void print_matrix(const struct matrix *m) {
 
 void matrix_destroy(struct matrix *m) {
     assert(m);
-    for (int i = 0; i < m->row; ++i) {
+    for (int i = 0; i < m->max_row; ++i) {
         free(m->data[i]);
         m->data[i] = NULL;
     }
     free(m->data);
     free(m);
+    m = NULL;
 }

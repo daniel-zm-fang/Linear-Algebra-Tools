@@ -2,7 +2,6 @@
 
 // time: r = number of rows, c = number of columns
 
-#include "../Chapter 1/vector.h"
 #include "../Chapter 2/matrix.h"
 
 // matrix_add(m1, m2) returns the sum of two matrices as a new matrix

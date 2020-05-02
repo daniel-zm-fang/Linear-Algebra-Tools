@@ -96,4 +96,5 @@ void seop_destroy(struct seop *s) {
     assert(s);
     vector_destroy(s->n);
     free(s);
+    s = NULL;
 }

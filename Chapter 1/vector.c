@@ -48,7 +48,6 @@ bool vectors_equal(const struct vector *v1, const struct vector *v2) {
     } else {
         return false;
     }
-    return 0;
 }
 
 struct vector *add(const struct vector *v1, const struct vector *v2) {
@@ -156,15 +155,16 @@ struct vector *perp(const struct vector *v1, const struct vector *v2) {
 
 void print_vector(const struct vector *v) {
     assert(v);
-    printf("length: %d\n[", v->dimension);
-    for (int i = 0; i < v->dimension - 1; ++i) {
-        printf("%.2f ", v->a[i]);
+    printf("+-        -+\n");
+    for (int i = 0; i < v->dimension; ++i) {
+        printf("|%8.2f  |\n", v->a[i]);
     }
-    printf("%.2f]\n\n", v->a[v->dimension - 1]);
+    printf("+-        -+\n\n");
 }
 
 void vector_destroy(struct vector *v) {
     assert(v);
     free(v->a);
     free(v);
+    v = NULL;
 }

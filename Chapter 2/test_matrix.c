@@ -37,9 +37,9 @@ int main(void) {
     add_row(v2, m1);
     add_row(v3, m1);
     assert(!is_rref(m1));
-    //print_matrix(m1);
+    // print_matrix(m1);
     change_augmented_col(1, m1);
-    //print_matrix(m1);
+    // print_matrix(m1);
     struct vector *v5 = get_row(1, m1);
     assert(vectors_equal(v5, v2));
     struct vector *v7 = get_col(2, m1);
@@ -48,6 +48,8 @@ int main(void) {
     assert(get_rank(m1) == 2);
     assert(get_free_var(m1) == 0);
     // print_matrix(m1);
+    assert(find_solution(m1) == NULL);
+    matrix_destroy(m1);
 
     struct matrix *m2 = matrix_create();
     add_row(v6, m2);
@@ -61,6 +63,10 @@ int main(void) {
     assert(get_rank(m2) == 2);
     assert(get_free_var(m2) == 1);
     // print_matrix(m2);
+    struct sov *s1 = find_solution(m2);
+    // print_sov(s1);
+    matrix_destroy(m2);
+    sov_destroy(s1);
 
     struct matrix *m3 = matrix_create();
     add_col(v8, m3);
@@ -74,6 +80,7 @@ int main(void) {
     assert(get_rank(m3) == 0);
     assert(get_free_var(m3) == 1);
     // print_matrix(m3);
+    matrix_destroy(m3);
 
     struct matrix *m4 = matrix_create();
     add_row(v11, m4);
@@ -86,6 +93,10 @@ int main(void) {
     assert(is_rref(m4));
     assert(get_rank(m4) == 3);
     assert(get_free_var(m4) == 2);
+    struct sov *s2 = find_solution(m4);
+    // print_sov(s2);
+    matrix_destroy(m4);
+    sov_destroy(s2);
 
     struct matrix *m5 = matrix_create();
     add_row(v1, m5);
@@ -100,24 +111,22 @@ int main(void) {
     assert(get_rank(m5) == 1);
     assert(get_free_var(m5) == 1);
     // print_matrix(m5);
+    struct sov *s3 = find_solution(m5);
+    // print_sov(s3);
+    sov_destroy(s3);
+    matrix_destroy(m5);
 
     struct matrix *m6 = matrix_create();
     add_col(v11, m6);
-    add_col(v12, m6);
-    add_col(v13, m6);
-    assert(!is_rref(m6));
-    // print_matrix(m6);
-    gauss_jordan_elimination(m6);
-    assert(is_rref(m6));
-    assert(get_rank(m6) == 3);
-    assert(get_free_var(m6) == 0);
-    // print_matrix(m6);
+    struct matrix *m7 = matrix_copy(m6);
+    // print_matrix(m7);
+    matrix_destroy(m7);
 
-    matrix_destroy(m1);
-    matrix_destroy(m2);
-    matrix_destroy(m3);
-    matrix_destroy(m4);
-    matrix_destroy(m5);
+    gauss_jordan_elimination(m6);
+    // print_matrix(m6);
+    struct sov *s4 = find_solution(m6);
+    // print_sov(s4);
+    sov_destroy(s4);
     matrix_destroy(m6);
 
     vector_destroy(v1);
