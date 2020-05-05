@@ -107,7 +107,7 @@ void move_zero_rows_bottom(struct matrix *m);
 
 // is_rref(m) returns true if m is in reduced row echelon form (RREF)
 // requires: m is not a NULL pointer
-// time: O(r * r * c);
+// time: O(r * c);
 bool is_rref(const struct matrix *m);
 
 // get_rank(m) returns the rank of an rref matrix
@@ -122,20 +122,27 @@ int get_rank(const struct matrix *m);
 // time: O(r * c)
 int get_free_var(const struct matrix *m);
 
+// is_col_free_var(c, m) returns true if a specified column of a matrix is a free variable
+// requires: m is not a NULL pointer
+//           0 < c < m->col
+//           m is in
+// time: O(r * c)
+bool is_col_free_var(int c, const struct matrix *m);
+
 // find_solution(m) returns NULL if the matrix is inconsistent; a set of vectors
 //  if the matrix is consistent
 // requires: m is a NULL pointer
 //           m must be in RREF form
 //           m has maximum of 1 augmented column
 // effects: may allocate memory (client must call sov_destroy)
-// time:
+// time: O(r * r * c)
 struct sov *find_solution(const struct matrix *m);
 
-// matrix_equal(m1, m2) returns true if the two matrices are equivalent
+// matrices_equal(m1, m2) returns true if the two matrices are equivalent
 //  (have the same solution set)
 // requires: m1 and m2 are not NULL pointers
-// time:
-bool matrix_equal(const struct matrix *m1, const struct matrix *m2);
+// time: O(r * r * c)
+bool matrices_equal(const struct matrix *m1, const struct matrix *m2);
 
 // print_matrix(m) prints the matrix in a nice format
 // requires: m is not a NULL pointer

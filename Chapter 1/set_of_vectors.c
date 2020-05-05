@@ -18,7 +18,7 @@ struct node {
     struct node *next;
 };
 
-// node_create(v, vnext, is_first) creates a new "node" that can
+// node_create(v, vnext) creates a new "node" that can
 //  be added to a set of vectors
 // requires: v is not a NULL pointer
 // effects: allocates memory (client must free)
@@ -71,7 +71,7 @@ bool is_set_empty(const struct sov *s) {
     return false;
 }
 
-void change_span(bool span, struct sov *s) {
+void change_sov_span(bool span, struct sov *s) {
     assert(s);
     s->is_span = span;
     if (!span) {
@@ -142,7 +142,7 @@ struct sov *dup_sov(const struct sov *s) {
     return new_s;
 }
 
-bool are_sets_equal(const struct sov *s1, const struct sov *s2) {
+bool vectors_sets_equal(const struct sov *s1, const struct sov *s2) {
     assert(s1);
     assert(s2);
     if (s1->num_vectors != s2->num_vectors) {

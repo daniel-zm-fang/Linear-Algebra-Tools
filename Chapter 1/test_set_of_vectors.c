@@ -1,6 +1,6 @@
 // These are simple tests for set_of_vectors module
 
-#include "set_of_vectors.h"
+#include "Chapter 1/set_of_vectors.h"
 #include <assert.h>
 
 int main(void) {
@@ -15,7 +15,7 @@ int main(void) {
     struct vector *v4 = vector_create(2, d);
 
     struct sov *s1 = sov_create();
-    change_span(true, s1);
+    change_sov_span(true, s1);
     // print_sov(s1);
 
     assert(is_set_empty(s1));
@@ -33,16 +33,16 @@ int main(void) {
 
     struct sov *s2 = dup_sov(s1);
     // print_sov(s2);
-    assert(are_sets_equal(s1, s2));
+    assert(vectors_sets_equal(s1, s2));
 
     struct sov *s3 = sov_create();
-    change_span(true, s3);
+    change_sov_span(true, s3);
     add_to_set(v1, s3);
     add_to_set(v3, s3);
     add_to_set(v2, s3);
     add_to_set(v1, s3);
     // print_sov(s3);
-    assert(are_sets_equal(s1, s3));
+    assert(vectors_sets_equal(s1, s3));
 
     assert(!remove_from_set(v4, s1));
     assert(remove_from_set(v1, s1));

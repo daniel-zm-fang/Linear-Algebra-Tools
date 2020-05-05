@@ -1,5 +1,5 @@
 // This module contains set of vectors ADT and its documentations
-// Note: functions that determine linear independence can be found in chapter 2
+// Note: functions that concern with linear independence can be found in chapter 2
 
 // times: n is the number of vectors in the set
 
@@ -33,11 +33,11 @@ int get_num_vector(const struct sov *s);
 // time: O(n)
 struct vector *get_vector(int pos, const struct sov *s);
 
-// change_span(span, s) changes whether a set of vectors represents a span or not
+// change_sov_span(span, s) changes whether a set of vectors represents a span or not
 // requires: s is not a NULL pointer
 // effects: may modify *s
 // time: O(1)
-void change_span(bool span, struct sov *s);
+void change_sov_span(bool span, struct sov *s);
 
 // change_const_vector(v, s) changes the constant vector of a span
 // requires: v and s are not NULL pointers
@@ -45,7 +45,7 @@ void change_span(bool span, struct sov *s);
 //           s is not empty
 //           v has the same dimension as s->dimension
 // effects: may modify *s
-// time: O(dimension of v)
+// time: O(n)
 void change_const_vector(struct vector *v, struct sov *s);
 
 // contains_vector(v, s) returns true if s contains vector vector
@@ -59,10 +59,10 @@ bool contains_vector(const struct vector *v, const struct sov *s);
 // time: O(n)
 struct sov *dup_sov(const struct sov *s);
 
-// are_sets_equal(s1, s2) returns true if the sets contains the same vectors
+// vectors_sets_equal(s1, s2) returns true if the sets contains the same vectors
 // requires: s1 and s2 are not NULL pointers
 // time: O(n ^ 2)
-bool are_sets_equal(const struct sov *s1, const struct sov *s2);
+bool vectors_sets_equal(const struct sov *s1, const struct sov *s2);
 
 // add_to_set(v, s) adds vector v to the back of s
 // requires: v and s are not NULL pointers

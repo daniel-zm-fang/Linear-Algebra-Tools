@@ -35,7 +35,7 @@ struct matrix *matrix_scalar_mult(double c, const struct matrix *m) {
     return new_m;
 }
 
-struct matrix *transpose(struct matrix *m) {
+struct matrix *transpose(const struct matrix *m) {
     assert(m);
     assert(num_aug_cols(m) == 0);
     struct matrix *new_m = matrix_create();
@@ -75,4 +75,18 @@ struct matrix *matrix_matrix_mult(const struct matrix *m1, const struct matrix *
         add_col(matrix_vector_mult(m1, get_col(i, m2)), new_m);
     }
     return new_m;
+}
+
+bool is_skew_symmetric(const struct matrix *m) {
+    assert(m);
+    struct matrix *m1 = matrix_copy(m);
+    struct matrix *m2 = matrix_copy(m);
+    struct matrix *m3 = matrix_scalar_mult(-1, m);
+    struct matrix *m4 = transpose(m2);
+    bool result = matrices_equal(m3, m4);
+    matrix_destroy(m1);
+    matrix_destroy(m2);
+    matrix_destroy(m3);
+    matrix_destroy(m4);
+    return result;
 }

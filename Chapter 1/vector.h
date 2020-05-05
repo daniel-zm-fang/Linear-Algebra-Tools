@@ -24,6 +24,11 @@ int get_dimension(const struct vector *v);
 // time: O(1)
 double vector_get_val(int pos, const struct vector *v);
 
+// is_zero_vector(v) returns true if a given vector is a zero vector
+// requires: v is not NULL pointer
+// time: O(n)
+bool is_zero_vector(const struct vector *v);
+
 // vectors_equal(v1, v2) checks whether v1 and v2 have the same dimension and have the same content
 // requires: v1 and v2 are not NULL pointers
 // time: O(n)

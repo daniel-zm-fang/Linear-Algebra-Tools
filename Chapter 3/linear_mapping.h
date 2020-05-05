@@ -1,8 +1,10 @@
+// This module contains functions that deal with linear mapping and their documentations
+// note: the equivalent of vector_proj function is proj from vector.h
+
+// time: n is the dimension of vector
+
 #include "../Chapter 2/matrix.h"
 #include "matrix_operations.h"
-
-// note: the equivalent of vector_proj function is proj from vector.h
-// time: n is the dimension of vector
 
 // proj_matrix(v) returns the standard matrix of projecting onto vector v
 // requires: v is not a NULL pointer

@@ -35,6 +35,16 @@ double vector_get_val(int pos, const struct vector *v) {
     return v->a[pos];
 }
 
+bool is_zero_vector(const struct vector *v) {
+    assert(v);
+    for (int i = 0; i < v->dimension; i++) {
+        if (v->a[i] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool vectors_equal(const struct vector *v1, const struct vector *v2) {
     assert(v1);
     assert(v2);

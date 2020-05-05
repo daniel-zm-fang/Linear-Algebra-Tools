@@ -1,18 +1,30 @@
+// This module contains functions that deal with linear dependency and their documentations
+
 #include "matrix.h"
 #include <stdbool.h>
 
-// This module contains functions that deal with linear dependency and its documentations
+// times: d = dimensions of vectors; n = number of vectors in the set
 
-// time: r = number of rows, c = number of columns
-
-// is_linearly_independent(s) returns true if a set of vectors are linearly independent
+// is_sov_linearly_independent(s) returns true if a set of vectors is linearly independent
 // requires: s is not NULL pointer
-// time: O(r * c * min(r, c))
-bool is_linearly_independent(const struct sov *s);
+// time: O(d * n * min(d, n))
+bool is_sov_linearly_independent(const struct sov *s);
 
-// make_linearly_independent(s) turns a set of vectors into a basis by removing
-//  some vectors; does nothing if the set is already linearly independent
+// make_sov_linearly_independent(s) tries to make a set of vectors linearly
+//  independent; does nothing if the set is already linearly independent
 // requires: s is not a NULL pointer
 // effects: may modify *s
-// time:
-void make_linearly_independent(struct sov *s);
+// time: O(n * n * d)
+void make_sov_linearly_independent(struct sov *s);
+
+// is_sov_span(s) returns true if a set of vectors is a span for R of n
+// requires: s is not a NULL pointer
+//           n >= 0
+// time: O(d * n * min(d, n)):
+bool is_sov_span(const struct sov *s, int n);
+
+// is_sov_basis returns true if a set of vectors is a basis for R of n
+// requires: s is not a NULL pointer
+//           n >= 0
+// time: O(d * n * min(d, n))
+bool is_sov_basis(const struct sov *s, int n);

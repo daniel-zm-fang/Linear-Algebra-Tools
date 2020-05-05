@@ -236,54 +236,41 @@ void gauss_jordan_elimination(struct matrix *m) {
     while (nonzero_col < stop_col && curr_row < m->row && !zero_row(curr_row, m)) {
         // get a leading one in the top of the column
         if (m->data[curr_row][nonzero_col] != 1) {
-            // try to find a row with a leading one and swap with it
-            // check if there's already a leading one
-            bool swap_first_row = false;
-            for (int i = 0; i < m->row; ++i) {
-                if (m->data[i][nonzero_col] == 1) {
-                    swap_rows(m->data[i], m->data[curr_row], m->col);
-                    swap_first_row = true;
-                    break;
+            // if the top of the nonzero_col is 0, try swapping with other rows
+            if (m->data[curr_row][nonzero_col] == 0) {
+                for (int i = curr_row + 1; i < m->row; ++i) {
+                    if (m->data[i][nonzero_col]) {
+                        swap_rows(m->data[i], m->data[curr_row], m->col);
+                        break;
+                    }
                 }
             }
-            // if there is no row with a leading one
-            if (!swap_first_row) {
-                // if the top of the nonzero_col is 0, try swapping with other rows
-                if (m->data[curr_row][nonzero_col] == 0) {
-                    for (int i = curr_row + 1; i < m->row; ++i) {
-                        if (m->data[i][nonzero_col]) {
-                            swap_rows(m->data[i], m->data[curr_row], m->col);
-                            break;
-                        }
+            // if swapping is unsuccessful
+            if (m->data[curr_row][nonzero_col] == 0) {
+                // get to the next nonzero number in the row
+                int count = 0;
+                for (int i = nonzero_col + 1; i < stop_col; ++i) {
+                    if (m->data[curr_row][i]) {
+                        count = i - nonzero_col;
+                        break;
                     }
                 }
-                // if swapping is unsuccessful
-                if (m->data[curr_row][nonzero_col] == 0) {
-                    // get to the next nonzero number in the row
-                    int count = 0;
-                    for (int i = nonzero_col + 1; i < stop_col; ++i) {
-                        if (m->data[curr_row][i]) {
-                            count = i - nonzero_col;
-                            break;
-                        }
+                if (count) {
+                    // reduce the coeffients of the current row
+                    double temp = m->data[curr_row][nonzero_col + count];
+                    for (int i = nonzero_col + count; i < stop_col; ++i) {
+                        m->data[curr_row][i] /= temp;
                     }
-                    if (count) {
-                        // reduce the coeffients of the current row
-                        double temp = m->data[curr_row][nonzero_col + count];
-                        for (int i = nonzero_col + count; i < stop_col; ++i) {
-                            m->data[curr_row][i] /= temp;
-                        }
-                    }
-                    nonzero_col += count;
-                    ;
-                    curr_row += 1;
-                    continue;
                 }
-                // now create a leading one in the top row
-                double temp = m->data[curr_row][nonzero_col];
-                for (int i = 0; i < m->col; ++i) {
-                    m->data[curr_row][i] /= temp;
-                }
+                nonzero_col += count;
+                ;
+                curr_row += 1;
+                continue;
+            }
+            // now create a leading one in the top row
+            double temp = m->data[curr_row][nonzero_col];
+            for (int i = 0; i < m->col; ++i) {
+                m->data[curr_row][i] /= temp;
             }
         }
         // make all numbers besides the leading one into 0
@@ -346,16 +333,18 @@ bool is_rref(const struct matrix *m) {
     // test 2: the first nonzero entry in each nonzero row is 1
     int stop_col = m->col - m->augmented_col;
     for (int i = 0; i < zero_row_start; ++i) {
-        bool seen_one = false;
+        int one_count = 0;
         for (int j = 0; j < stop_col; ++j) {
-            if (m->data[i][j] != 0 && m->data[i][j] != 1 && !seen_one) {
+            if (m->data[i][j] != 0 && m->data[i][j] != 1 && one_count == 0) {
                 return false;
             } else if (m->data[i][j] == 1) {
-                seen_one = true;
+                one_count += 1;
                 // test 3: a leading one is the only nonzero entry in its column
-                for (int k = 0; k < zero_row_start; ++k) {
-                    if (m->data[k][j] != 0 && k != i) {
-                        return false;
+                if (one_count == 1) {
+                    for (int k = 0; k < zero_row_start; ++k) {
+                        if (m->data[k][j] != 0 && k != i) {
+                            return false;
+                        }
                     }
                 }
             }
@@ -393,13 +382,7 @@ int get_free_var(const struct matrix *m) {
     return m->col - m->augmented_col - get_rank(m);
 }
 
-// is_col_free_var(c, m) returns true if a specified column of a matrix is a free variable
-// requires: m is not a NULL pointer
-//           0 < c < m->col
-//           m is in
-// time: O(r * c)
-
-static bool is_col_free_var(int c, const struct matrix *m) {
+bool is_col_free_var(int c, const struct matrix *m) {
     assert(m);
     assert(c >= 0);
     assert(c < m->col);
@@ -461,7 +444,7 @@ struct sov *find_solution(const struct matrix *m) {
             add_to_set(vector_create(m->col, a), s);
         } else {
             // not augmented & infinite solutions
-            change_span(true, s);
+            change_sov_span(true, s);
             for (int i = 0; i < m->col; ++i) {
                 if (is_col_free_var(i, m)) {
                     double *a = malloc(m->col * sizeof(double));
@@ -489,7 +472,7 @@ struct sov *find_solution(const struct matrix *m) {
                     add_to_set(vector_create(m->col - 1, b), s);
                 }
             }
-            change_span(true, s);
+            change_sov_span(true, s);
             double *a = malloc((m->col - 1) * sizeof(double));
             for (int i = 0; i < m->col - 1; ++i) {
                 if (i <= free_var) {
@@ -504,12 +487,14 @@ struct sov *find_solution(const struct matrix *m) {
     return s;
 }
 
-bool matrix_equal(const struct matrix *m1, const struct matrix *m2) {
+bool matrices_equal(const struct matrix *m1, const struct matrix *m2) {
     assert(m1);
     assert(m2);
     struct matrix *m1_rref = matrix_copy(m1);
     struct matrix *m2_rref = matrix_copy(m2);
-    bool result = are_sets_equal(find_solution(m1_rref), find_solution(m2_rref));
+    gauss_jordan_elimination(m1_rref);
+    gauss_jordan_elimination(m2_rref);
+    bool result = vectors_sets_equal(find_solution(m1_rref), find_solution(m2_rref));
     matrix_destroy(m1_rref);
     matrix_destroy(m2_rref);
     return result;

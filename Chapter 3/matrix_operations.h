@@ -1,4 +1,4 @@
-// This module contains functions that deal with matrices and its documentations
+// This module contains functions that deal with matrices and their documentations
 
 // time: r = number of rows, c = number of columns
 
@@ -22,7 +22,7 @@ struct matrix *matrix_scalar_mult(double c, const struct matrix *m);
 //           m is not an augmented matrix
 // effects: allocates memory (client must call matrix_destroy)
 // time: O(r * c)
-struct matrix *transpose(struct matrix *m);
+struct matrix *transpose(const struct matrix *m);
 
 // matrix_vector_mult(m, v) returns the product of a vector and a matrix
 // requires: v and m are not NULL pointers
@@ -39,3 +39,8 @@ struct vector *matrix_vector_mult(const struct matrix *m, const struct vector *v
 // effects: allocates memory (client must call matrix_destroy)
 // time: O(r1 * c1 * r2 * c2) r1, c1 -> m1; r2, c2 -> m2
 struct matrix *matrix_matrix_mult(const struct matrix *m1, const struct matrix *m2);
+
+// is_skew_symmetric(m) returns true if the matrix is a skew symmetric matrix
+// requires: m is not a NULL pointer
+// time: O(r ^ 2 * c)
+bool is_skew_symmetric(const struct matrix *m);
