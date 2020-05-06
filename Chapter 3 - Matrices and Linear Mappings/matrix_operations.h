@@ -2,7 +2,7 @@
 
 // time: r = number of rows, c = number of columns
 
-#include "../Chapter 2/matrix.h"
+#include "../Chapter 2 - Systems of Linear Equations/matrix.h"
 
 // matrix_add(m1, m2) returns the sum of two matrices as a new matrix
 // requires: m1 and m2 are not NULL pointers

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// This is the implementation for set of matrices
+// This is the implementation of functions of set of matrices
 // See set_of_matrices.h for documentations
 
 struct som {
@@ -41,7 +41,7 @@ struct som *som_create() {
     return s;
 }
 
-bool is_set_matrices_span(const struct som *s) {
+bool get_som_span(const struct som *s) {
     assert(s);
     return s->is_span;
 }
@@ -63,7 +63,7 @@ struct matrix *get_matrix(int pos, const struct som *s) {
     return temp->value;
 }
 
-bool is_set_matrices_empty(const struct som *s) {
+bool is_som_empty(const struct som *s) {
     assert(s);
     if (s->num_matrices == 0) {
         return true;
@@ -150,7 +150,7 @@ bool matrices_sets_equal(const struct som *s1, const struct som *s2) {
     return true;
 }
 
-void add_to_matrices_set(struct matrix *m, struct som *s) {
+void add_to_som(struct matrix *m, struct som *s) {
     assert(m);
     assert(s);
     assert(num_aug_cols(m) == 0);
@@ -164,7 +164,7 @@ void add_to_matrices_set(struct matrix *m, struct som *s) {
     s->num_matrices += 1;
 }
 
-bool remove_from_matrices_set(const struct matrix *m, struct som *s) {
+bool remove_from_som(const struct matrix *m, struct som *s) {
     assert(m);
     assert(s);
     assert(s->num_matrices);
@@ -188,6 +188,24 @@ bool remove_from_matrices_set(const struct matrix *m, struct som *s) {
     free(old_node);
     s->num_matrices -= 1;
     return true;
+}
+
+struct matrix *som_to_matrix(const struct som *s) {
+    assert(s);
+    assert(s->num_matrices);
+    int r = num_rows(get_matrix(0, s));
+    int c = num_rows(get_matrix(0, s));
+    struct matrix *temp = matrix_create();
+    for (int i = 0; i < s->num_matrices; ++i) {
+        double *a = malloc(r * c * sizeof(double));
+        for (int j = 0; j < r; ++j) {
+            for (int k = 0; k < c; ++k) {
+                a[j * c + k] = matrix_get_val(j, k, get_matrix(i, s));
+            }
+        }
+        add_col(vector_create(r * c, a), temp);
+    }
+    return temp;
 }
 
 void print_som(const struct som *s) {

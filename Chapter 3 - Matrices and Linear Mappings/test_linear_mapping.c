@@ -1,6 +1,6 @@
 // This is a simple test for linear mapping module
 
-#include "Chapter 3/linear_mapping.h"
+#include "linear_mapping.h"
 #include <assert.h>
 #include <stdio.h>
 

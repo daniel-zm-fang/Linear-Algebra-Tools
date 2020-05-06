@@ -2,8 +2,8 @@
 
 // times: n is the number of matrices in the set
 
-#include "../Chapter 2/matrix.h"
-#include "../Chapter 3/matrix_operations.h"
+#include "../Chapter 2 - Systems of Linear Equations/matrix.h"
+#include "../Chapter 3 - Matrices and Linear Mappings/matrix_operations.h"
 struct som;
 
 // som_create() creates a new empty set of matrices
@@ -11,15 +11,15 @@ struct som;
 // time: O(1)
 struct som *som_create();
 
-// is_set_empty(s) returns true if set s is an empty set
+// is_som_empty(s) returns true if set s is an empty set
 // requires: s is not a NULL pointer
 // time: O(1)
-bool is_set_matrices_empty(const struct som *s);
+bool is_som_empty(const struct som *s);
 
-// is_set_span(s) returns true if set s is a span
+// get_som_span(s) returns true if set s is a span
 // requires: s is not a NULL pointer
 // time: O(1)
-bool is_set_matrices_span(const struct som *s);
+bool get_som_span(const struct som *s);
 
 // get_num_matrices(s) returns the number of matrices in set s
 // requires: s is not a NULL pointer
@@ -64,22 +64,29 @@ struct som *dup_som(const struct som *s);
 // time: O(n ^ 2)
 bool matrices_sets_equal(const struct som *s1, const struct som *s2);
 
-// add_to_matrices_set(m, s) adds matrix m to the back of s
+// add_to_som(m, s) adds matrix m to the back of s
 // requires: m and s are not NULL pointers
 //           m has the same number of row and colomn
 //           m is not an augmented matrix
 // effects: modifies s
 //          allocates memory (client must free when removing v)
 // time: O(1)
-void add_to_matrices_set(struct matrix *m, struct som *s);
+void add_to_som(struct matrix *m, struct som *s);
 
-// remove_from_matrices_set(m, s) remove matrix m from s if m is in s, returns true if
+// remove_from_som(m, s) remove matrix m from s if m is in s, returns true if
 //  matrix is succfessfully removed
 // requires: m and s are not NULL pointers
 //           s is not empty
 // effects: may modify s
 // time: O(n)
-bool remove_from_matrices_set(const struct matrix *m, struct som *s);
+bool remove_from_som(const struct matrix *m, struct som *s);
+
+// som_to_matrix(s) returns a matrix such that its columns represent matrices from som
+// requires: s is not a NULL pointer
+//           s is not empty
+// effects: allocates memory (client must call matrix_destroy)
+// time: (# columns * # rows * n)
+struct matrix *som_to_matrix(const struct som *s);
 
 // print_som(s) prints all the matrices in s
 // requires: s is not a NULL pointer

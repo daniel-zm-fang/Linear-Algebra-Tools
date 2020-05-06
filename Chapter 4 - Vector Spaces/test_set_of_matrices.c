@@ -1,6 +1,6 @@
 // This is a simple test for set of matrices module
 
-#include "Chapter 4/set_of_matrices.h"
+#include "set_of_matrices.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -27,22 +27,22 @@ int main(void) {
     add_row(v5, m3);
     add_row(v6, m3);
     struct som *s1 = som_create();
-    add_to_matrices_set(m1, s1);
-    add_to_matrices_set(m2, s1);
-    add_to_matrices_set(m3, s1);
+    add_to_som(m1, s1);
+    add_to_som(m2, s1);
+    add_to_som(m3, s1);
     // print_som(s1);
 
     struct som *s2 = dup_som(s1);
     // print_som(s2);
     assert(matrices_sets_equal(s1, s2));
 
-    remove_from_matrices_set(m1, s1);
-    remove_from_matrices_set(m2, s1);
-    remove_from_matrices_set(m3, s1);
+    remove_from_som(m1, s1);
+    remove_from_som(m2, s1);
+    remove_from_som(m3, s1);
     // print_som(s1);
-    remove_from_matrices_set(m1, s2);
-    remove_from_matrices_set(m1, s2);
-    remove_from_matrices_set(m1, s2);
+    remove_from_som(m1, s2);
+    remove_from_som(m1, s2);
+    remove_from_som(m1, s2);
     // print_som(s2);
     assert(matrices_sets_equal(s1, s2));
 

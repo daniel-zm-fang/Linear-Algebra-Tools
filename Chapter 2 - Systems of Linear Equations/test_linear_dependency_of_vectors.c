@@ -1,6 +1,6 @@
 // This is a simple test for linear dependency module
 
-#include "Chapter 2/linear_dependency.h"
+#include "linear_dependency_of_vectors.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -12,9 +12,10 @@ int main(void) {
     struct vector *v2 = vector_create(3, b);
     struct vector *v3 = vector_create(3, c);
     struct sov *s1 = sov_create();
-    add_to_set(v1, s1);
-    add_to_set(v2, s1);
-    add_to_set(v3, s1);
+    add_to_sov(v1, s1);
+    add_to_sov(v2, s1);
+    add_to_sov(v3, s1);
+    change_sov_span(true, s1);
     // print_sov(s1);
     assert(is_sov_linearly_independent(s1));
     make_sov_linearly_independent(s1);
@@ -29,9 +30,9 @@ int main(void) {
     struct vector *v5 = vector_create(3, e);
     struct vector *v6 = vector_create(3, f);
     struct sov *s2 = sov_create();
-    add_to_set(v4, s2);
-    add_to_set(v5, s2);
-    add_to_set(v6, s2);
+    add_to_sov(v4, s2);
+    add_to_sov(v5, s2);
+    add_to_sov(v6, s2);
     // print_sov(s2);
     assert(!is_sov_linearly_independent(s2));
     make_sov_linearly_independent(s2);
@@ -41,8 +42,8 @@ int main(void) {
     double g[3] = {-2, 0, 6};
     struct vector *v7 = vector_create(3, g);
     struct sov *s3 = sov_create();
-    add_to_set(v6, s3);
-    add_to_set(v7, s3);
+    add_to_sov(v6, s3);
+    add_to_sov(v7, s3);
     // print_sov(s3);
     assert(!is_sov_linearly_independent(s3));
     assert(!is_sov_span(s3, 0));
@@ -61,15 +62,16 @@ int main(void) {
     struct vector *v10 = vector_create(3, j);
     struct vector *v11 = vector_create(3, k);
     struct sov *s4 = sov_create();
-    add_to_set(v8, s4);
-    add_to_set(v9, s4);
-    add_to_set(v10, s4);
-    add_to_set(v11, s4);
+    add_to_sov(v8, s4);
+    add_to_sov(v9, s4);
+    add_to_sov(v10, s4);
+    add_to_sov(v11, s4);
     // print_sov(s4);
     assert(!is_sov_linearly_independent(s4));
     make_sov_linearly_independent(s4);
-    assert(is_sov_linearly_independent(s4));
     // print_sov(s4);
+    assert(is_sov_linearly_independent(s4));
+
     assert(!is_sov_span(s4, 2));
     assert(!is_sov_span(s4, 3));
 
@@ -82,10 +84,10 @@ int main(void) {
     struct vector *v14 = vector_create(4, n);
     struct vector *v15 = vector_create(4, o);
     struct sov *s5 = sov_create();
-    add_to_set(v12, s5);
-    add_to_set(v13, s5);
-    add_to_set(v14, s5);
-    add_to_set(v15, s5);
+    add_to_sov(v12, s5);
+    add_to_sov(v13, s5);
+    add_to_sov(v14, s5);
+    add_to_sov(v15, s5);
     // print_sov(s5);
     assert(!is_sov_linearly_independent(s5));
     make_sov_linearly_independent(s5);
@@ -94,6 +96,7 @@ int main(void) {
     assert(!is_sov_span(s5, 4));
 
     struct sov *s6 = sov_create();
+    change_sov_span(true, s6);
     assert(is_sov_linearly_independent(s6));
     assert(is_sov_span(s6, 0));
     assert(is_sov_basis(s6, 0));

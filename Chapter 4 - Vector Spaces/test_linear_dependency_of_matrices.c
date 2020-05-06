@@ -1,6 +1,6 @@
 // This is a simple test for the linear dependency of matrices module
 
-#include "Chapter 4/linear_dependency_of_matrices.h"
+#include "linear_dependency_of_matrices.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -27,9 +27,9 @@ int main(void) {
     add_row(v5, m3);
     add_row(v6, m3);
     struct som *s1 = som_create();
-    add_to_matrices_set(m1, s1);
-    add_to_matrices_set(m2, s1);
-    add_to_matrices_set(m3, s1);
+    add_to_som(m1, s1);
+    add_to_som(m2, s1);
+    add_to_som(m3, s1);
     // print_som(s1);
     assert(is_som_linearly_independent(s1));
     make_som_linearly_independent(s1);
@@ -49,9 +49,9 @@ int main(void) {
     add_row(v7, m6);
     add_row(v1, m6);
     struct som *s2 = som_create();
-    add_to_matrices_set(m4, s2);
-    add_to_matrices_set(m5, s2);
-    add_to_matrices_set(m6, s2);
+    add_to_som(m4, s2);
+    add_to_som(m5, s2);
+    add_to_som(m6, s2);
     // print_som(s2);
     assert(is_som_linearly_independent(s2));
     make_som_linearly_independent(s2);
@@ -69,9 +69,9 @@ int main(void) {
     add_row(v3, m9);
     add_row(v3, m9);
     struct som *s3 = som_create();
-    add_to_matrices_set(m7, s3);
-    add_to_matrices_set(m8, s3);
-    add_to_matrices_set(m9, s3);
+    add_to_som(m7, s3);
+    add_to_som(m8, s3);
+    add_to_som(m9, s3);
     // print_som(s3);
     assert(!is_som_linearly_independent(s3));
     make_som_linearly_independent(s3);
@@ -102,9 +102,9 @@ int main(void) {
     add_row(v13, m12);
     add_row(v3, m12);
     struct som *s5 = som_create();
-    add_to_matrices_set(m10, s5);
-    add_to_matrices_set(m11, s5);
-    add_to_matrices_set(m12, s5);
+    add_to_som(m10, s5);
+    add_to_som(m11, s5);
+    add_to_som(m12, s5);
     change_som_span(true, s5);
     // print_som(s5);
 

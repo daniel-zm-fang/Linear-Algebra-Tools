@@ -2,14 +2,14 @@
 #include <assert.h>
 #include <stdlib.h>
 
-// This is the implementation for functions for speical subspaces
+// This is the implementation of functions of speical subspaces
 // See special_subspaces.h for documentations
 
 bool is_in_nullspace(const struct vector *v, const struct matrix *m) {
     assert(v);
     assert(m);
     assert(num_aug_cols(m) == 0);
-    if (get_dimension(v) != num_cols(m)) {
+    if (get_vector_dimension(v) != num_cols(m)) {
         return false;
     }
     struct vector *temp_v = matrix_vector_mult(m, v);
@@ -23,7 +23,7 @@ bool is_in_column_space(const struct vector *v, const struct matrix *m) {
     assert(v);
     assert(m);
     assert(num_aug_cols(m) == 0);
-    if (get_dimension(v) != num_rows(m)) {
+    if (get_vector_dimension(v) != num_rows(m)) {
         return false;
     }
     struct matrix *temp_m = matrix_copy(m);
@@ -45,7 +45,7 @@ bool is_in_row_space(const struct vector *v, const struct matrix *m) {
     assert(v);
     assert(m);
     assert(num_aug_cols(m) == 0);
-    if (get_dimension(v) != num_cols(m)) {
+    if (get_vector_dimension(v) != num_cols(m)) {
         return false;
     }
     struct matrix *temp_m = transpose(m);
@@ -67,7 +67,7 @@ bool is_in_left_nullspace(const struct vector *v, const struct matrix *m) {
     assert(v);
     assert(m);
     assert(num_aug_cols(m) == 0);
-    if (get_dimension(v) != num_rows(m)) {
+    if (get_vector_dimension(v) != num_rows(m)) {
         return false;
     }
     struct matrix *temp_m = transpose(m);
@@ -92,7 +92,7 @@ struct sov *find_column_space(const struct matrix *m) {
     assert(num_aug_cols(m) == 0);
     struct sov *temp = sov_create();
     for (int i = 0; i < num_cols(m); i++) {
-        add_to_set(get_col(i, m), temp);
+        add_to_sov(get_col(i, m), temp);
     }
     make_sov_linearly_independent(temp);
     return temp;
@@ -103,7 +103,7 @@ struct sov *find_row_space(const struct matrix *m) {
     assert(num_aug_cols(m) == 0);
     struct sov *temp = sov_create();
     for (int i = 0; i < num_rows(m); i++) {
-        add_to_set(get_row(i, m), temp);
+        add_to_sov(get_row(i, m), temp);
     }
     make_sov_linearly_independent(temp);
     return temp;

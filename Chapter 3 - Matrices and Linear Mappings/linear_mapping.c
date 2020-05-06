@@ -3,12 +3,12 @@
 #include <math.h>
 #include <stdlib.h>
 
-// This is the implementation for functions for linear_mapping
+// This is the implementation of functions of linear mapping
 // See linear_mapping.h for documentations
 
 struct matrix *proj_matrix(const struct vector *v) {
     assert(v);
-    int dimension = get_dimension(v);
+    int dimension = get_vector_dimension(v);
     struct matrix *m = matrix_create();
     double *a = malloc(dimension * sizeof(double));
     for (int i = 0; i < dimension; i++) {
@@ -43,7 +43,7 @@ struct matrix *rotation_matrix(double theta) {
 
 struct matrix *reflection_matrix(const struct vector *n) {
     assert(n);
-    int dimension = get_dimension(n);
+    int dimension = get_vector_dimension(n);
     struct matrix *m = matrix_create();
     double *a = malloc(dimension * sizeof(double));
     for (int i = 0; i < dimension; i++) {
@@ -63,7 +63,7 @@ struct matrix *reflection_matrix(const struct vector *n) {
 
 struct vector *vector_rotation(double theta, const struct vector *v) {
     assert(v);
-    assert(get_dimension(v) == 2);
+    assert(get_vector_dimension(v) == 2);
     struct matrix *m = rotation_matrix(theta);
     struct vector *result = matrix_vector_mult(m, v);
     matrix_destroy(m);
@@ -73,7 +73,7 @@ struct vector *vector_rotation(double theta, const struct vector *v) {
 struct vector *vector_reflection(const struct vector *n, const struct vector *x) {
     assert(n);
     assert(x);
-    assert(get_dimension(n) == get_dimension(x));
+    assert(get_vector_dimension(n) == get_vector_dimension(x));
     struct matrix *m = reflection_matrix(n);
     struct vector *v = matrix_vector_mult(m, x);
     matrix_destroy(m);

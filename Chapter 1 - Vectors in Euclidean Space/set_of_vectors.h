@@ -13,20 +13,20 @@ struct sov;
 // time: O(1)
 struct sov *sov_create();
 
-// is_set_empty(s) returns true if set s is an empty set
+// is_sov_empty(s) returns true if set s is an empty set
 // requires: s is not a NULL pointer
 // time: O(1)
-bool is_set_empty(const struct sov *s);
+bool is_sov_empty(const struct sov *s);
 
-// is_set_span(s) returns true if set s is a span
+// get_sov_span(s) returns true if set s is a span
 // requires: s is not a NULL pointer
 // time: O(1)
-bool is_set_span(const struct sov *s);
+bool get_sov_span(const struct sov *s);
 
-// get_num_vector(s) returns the number of vectors in set s
+// get_num_vectors(s) returns the number of vectors in set s
 // requires: s is not a NULL pointer
 // time: O(1)
-int get_num_vector(const struct sov *s);
+int get_num_vectors(const struct sov *s);
 
 // get_vector(pos, s) returns a vectors at a specified position of s
 // requires: s is not a NULL pointer
@@ -64,21 +64,21 @@ struct sov *dup_sov(const struct sov *s);
 // time: O(n ^ 2)
 bool vectors_sets_equal(const struct sov *s1, const struct sov *s2);
 
-// add_to_set(v, s) adds vector v to the back of s
+// add_to_sov(v, s) adds vector v to the back of s
 // requires: v and s are not NULL pointers
 //           v has the same dimension as s->dimension
 // effects: modifies s
 //          allocates memory (client must free when removing v)
 // time: O(1)
-void add_to_set(struct vector *v, struct sov *s);
+void add_to_sov(struct vector *v, struct sov *s);
 
-// remove_from_set(v, s) removes vector v from s if v is in s, returns true if
+// remove_from_sov(v, s) removes vector v from s if v is in s, returns true if
 //  vector is succfessfully removed
 // requires: v and s are not NULL pointers
 //           s is not empty
 // effects: may modify s
 // time: O(n)
-bool remove_from_set(const struct vector *v, struct sov *s);
+bool remove_from_sov(const struct vector *v, struct sov *s);
 
 // print_sov(s) prints all the vectors in s
 // requires: s is not a NULL pointer

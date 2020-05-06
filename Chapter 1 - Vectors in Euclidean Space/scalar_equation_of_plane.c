@@ -56,9 +56,9 @@ struct seop *vector_to_scalar(const struct vector *v1, const struct vector *v2, 
     assert(v1);
     assert(v2);
     assert(v3);
-    assert(get_dimension(v1) == 3);
-    assert(get_dimension(v2) == 3);
-    assert(get_dimension(v3) == 3);
+    assert(get_vector_dimension(v1) == 3);
+    assert(get_vector_dimension(v2) == 3);
+    assert(get_vector_dimension(v3) == 3);
     struct vector *n = normal_vector(v1, v2);
     int d = vector_get_val(0, n) * vector_get_val(0, v3) +
             vector_get_val(1, n) * vector_get_val(1, v3) +

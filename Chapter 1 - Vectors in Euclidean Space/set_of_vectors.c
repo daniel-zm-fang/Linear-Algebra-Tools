@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// This is the implementation of set of vectors
+// This is the implementation of functions of a set of vectors
 // See set_of_vectors.h for documentations
 
 struct sov {
@@ -41,12 +41,12 @@ struct sov *sov_create() {
     return s;
 }
 
-bool is_set_span(const struct sov *s) {
+bool get_sov_span(const struct sov *s) {
     assert(s);
     return s->is_span;
 }
 
-int get_num_vector(const struct sov *s) {
+int get_num_vectors(const struct sov *s) {
     assert(s);
     return s->num_vectors;
 }
@@ -63,7 +63,7 @@ struct vector *get_vector(int pos, const struct sov *s) {
     return temp->value;
 }
 
-bool is_set_empty(const struct sov *s) {
+bool is_sov_empty(const struct sov *s) {
     assert(s);
     if (s->num_vectors == 0) {
         return true;
@@ -85,8 +85,8 @@ void change_const_vector(struct vector *v, struct sov *s) {
     assert(s);
     assert(s->is_span);
     assert(s->num_vectors);
-    assert(get_dimension(v) == get_dimension(s->vectors->value));
-    int length = get_dimension(v);
+    assert(get_vector_dimension(v) == get_vector_dimension(s->vectors->value));
+    int length = get_vector_dimension(v);
     double *temp = malloc(length * sizeof(double));
     for (int i = 0; i < length; ++i) {
         temp[i] = vector_get_val(i, v);
@@ -130,7 +130,7 @@ struct sov *dup_sov(const struct sov *s) {
     new_s->num_vectors = s->num_vectors;
     new_s->vectors = dup_nodes(s->vectors);
     if (s->const_vector) {
-        int length = get_dimension(s->const_vector);
+        int length = get_vector_dimension(s->const_vector);
         double *temp = malloc(length * sizeof(double));
         for (int i = 0; i < length; ++i) {
             temp[i] = vector_get_val(i, s->const_vector);
@@ -166,19 +166,19 @@ bool vectors_sets_equal(const struct sov *s1, const struct sov *s2) {
     return true;
 }
 
-void add_to_set(struct vector *v, struct sov *s) {
+void add_to_sov(struct vector *v, struct sov *s) {
     assert(v);
     assert(s);
     if (s->num_vectors == 0) {
         s->vectors = node_create(v, NULL);
     } else {
-        assert(get_dimension(s->vectors->value) == get_dimension(v));
+        assert(get_vector_dimension(s->vectors->value) == get_vector_dimension(v));
         s->vectors = node_create(v, s->vectors);
     }
     s->num_vectors += 1;
 }
 
-bool remove_from_set(const struct vector *v, struct sov *s) {
+bool remove_from_sov(const struct vector *v, struct sov *s) {
     assert(v);
     assert(s);
     assert(s->num_vectors);

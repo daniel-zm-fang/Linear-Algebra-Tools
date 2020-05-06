@@ -2,8 +2,8 @@
 
 // time: r = number of rows, c = number of columns
 
-#include "../Chapter 2/linear_dependency.h"
-#include "../Chapter 2/matrix.h"
+#include "../Chapter 2 - Systems of Linear Equations/linear_dependency_of_vectors.h"
+#include "../Chapter 2 - Systems of Linear Equations/matrix.h"
 #include "matrix_operations.h"
 
 // is_in_nullspace(v, m) returns true if a vector is in the nullspace of a matrix

@@ -1,6 +1,6 @@
 // This is a simple test for matrix module
 
-#include "Chapter 2/matrix.h"
+#include "matrix.h"
 #include <assert.h>
 #include <stdio.h>
 

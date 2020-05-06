@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// This is the implementation for matrix
+// This is the implementation of functions of a matrix
 // See matrix.h for documentation of functions
 
 struct matrix {
@@ -106,7 +106,7 @@ void add_row(const struct vector *v, struct matrix *m) {
     assert(v);
     assert(m);
     if (is_empty(m)) {
-        m->col = get_dimension(v);
+        m->col = get_vector_dimension(v);
         m->max_col = m->col;
         m->max_row = 1;
         m->row += 1;
@@ -117,7 +117,7 @@ void add_row(const struct vector *v, struct matrix *m) {
             m->data[0][i] = vector_get_val(i, v);
         }
     } else {
-        assert(get_dimension(v) == m->col);
+        assert(get_vector_dimension(v) == m->col);
         if (m->row == m->max_row) {
             m->max_row *= 2;
             m->data = realloc(m->data, m->max_row * sizeof(double *));
@@ -136,7 +136,7 @@ void add_col(const struct vector *v, struct matrix *m) {
     assert(v);
     assert(m);
     if (is_empty(m)) {
-        m->row = get_dimension(v);
+        m->row = get_vector_dimension(v);
         m->max_row = m->row;
         m->max_col = 1;
         m->data = realloc(m->data, m->max_row * sizeof(double *));
@@ -145,7 +145,7 @@ void add_col(const struct vector *v, struct matrix *m) {
             m->data[i][0] = vector_get_val(i, v);
         }
     } else {
-        assert(get_dimension(v) == m->row);
+        assert(get_vector_dimension(v) == m->row);
         if (m->col == m->max_col) {
             m->max_col *= 2;
             for (int i = 0; i < m->row; ++i) {
@@ -441,7 +441,7 @@ struct sov *find_solution(const struct matrix *m) {
             for (int i = 0; i < m->col; ++i) {
                 a[i] = 0;
             }
-            add_to_set(vector_create(m->col, a), s);
+            add_to_sov(vector_create(m->col, a), s);
         } else {
             // not augmented & infinite solutions
             change_sov_span(true, s);
@@ -452,14 +452,14 @@ struct sov *find_solution(const struct matrix *m) {
                         a[j] = -1 * m->data[j][i];
                     }
                     a[i] = 1;
-                    add_to_set(vector_create(m->col, a), s);
+                    add_to_sov(vector_create(m->col, a), s);
                 }
             }
         }
     } else {
         if (free_var == 0) {
             // augmented & unique solution
-            add_to_set(get_col(m->col - 1, m), s);
+            add_to_sov(get_col(m->col - 1, m), s);
         } else {
             // augmented & infinite solutions
             for (int i = 0; i < m->col - 1; ++i) {
@@ -469,7 +469,7 @@ struct sov *find_solution(const struct matrix *m) {
                         b[j] = -1 * m->data[j][i];
                     }
                     b[i] = 1;
-                    add_to_set(vector_create(m->col - 1, b), s);
+                    add_to_sov(vector_create(m->col - 1, b), s);
                 }
             }
             change_sov_span(true, s);
@@ -498,6 +498,15 @@ bool matrices_equal(const struct matrix *m1, const struct matrix *m2) {
     matrix_destroy(m1_rref);
     matrix_destroy(m2_rref);
     return result;
+}
+
+struct matrix *sov_to_matrix(const struct sov *s) {
+    assert(s);
+    struct matrix *m = matrix_create();
+    for (int i = 0; i < get_num_vectors(s); ++i) {
+        add_col(get_vector(i, s), m);
+    }
+    return m;
 }
 
 void print_matrix(const struct matrix *m) {

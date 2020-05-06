@@ -2,7 +2,7 @@
 
 // time: r = number of rows, c = number of columns
 
-#include "../Chapter 1/set_of_vectors.h"
+#include "../Chapter 1 - Vectors in Euclidean Space/set_of_vectors.h"
 #include <stdbool.h>
 
 struct matrix;
@@ -143,6 +143,13 @@ struct sov *find_solution(const struct matrix *m);
 // requires: m1 and m2 are not NULL pointers
 // time: O(r * r * c)
 bool matrices_equal(const struct matrix *m1, const struct matrix *m2);
+
+// sov_to_matrix(s) returns a matrix such that each of its column
+//   represents a vector from a set of vectors
+// requires: s is not a NULL pointer
+// effects: allocates memory (client must call matrix_destroy)
+// time: O(# of vectors in s)
+struct matrix *sov_to_matrix(const struct sov *s);
 
 // print_matrix(m) prints the matrix in a nice format
 // requires: m is not a NULL pointer

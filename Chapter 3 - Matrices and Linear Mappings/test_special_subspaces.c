@@ -1,6 +1,6 @@
 // This is a simple test for special subspaces module
 
-#include "Chapter 3/special_subspaces.h"
+#include "special_subspaces.h"
 #include <assert.h>
 #include <stdio.h>
 

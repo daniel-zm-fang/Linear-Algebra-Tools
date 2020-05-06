@@ -1,6 +1,6 @@
 // This is a simple test for matrix operations module
 
-#include "Chapter 3/matrix_operations.h"
+#include "matrix_operations.h"
 #include <assert.h>
 #include <stdio.h>
 

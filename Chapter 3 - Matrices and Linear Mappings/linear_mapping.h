@@ -3,7 +3,7 @@
 
 // time: n is the dimension of vector
 
-#include "../Chapter 2/matrix.h"
+#include "../Chapter 2 - Systems of Linear Equations/matrix.h"
 #include "matrix_operations.h"
 
 // proj_matrix(v) returns the standard matrix of projecting onto vector v

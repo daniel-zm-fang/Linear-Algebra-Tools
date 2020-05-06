@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// This is the implementation for vector
+// This is the implementation of functions of a vector
 // See vector.h for documentation of functions
 
 struct vector {
@@ -23,7 +23,7 @@ struct vector *vector_create(int l, double *arr) {
     return v;
 }
 
-int get_dimension(const struct vector *v) {
+int get_vector_dimension(const struct vector *v) {
     assert(v);
     return v->dimension;
 }

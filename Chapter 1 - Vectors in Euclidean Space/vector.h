@@ -13,10 +13,10 @@ struct vector;
 // time: O(1)
 struct vector *vector_create(int l, double *arr);
 
-// get_dimension(v) returns the dimension of the vector v
+// get_vector_dimension(v) returns the dimension of the vector v
 // requires: v is not a NULL pointer
 // time: O(1)
-int get_dimension(const struct vector *v);
+int get_vector_dimension(const struct vector *v);
 
 // vector_get_val(pos, v) returns the number at a given position of a vector
 // require: pos >= 0

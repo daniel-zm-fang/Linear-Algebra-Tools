@@ -18,13 +18,13 @@ int main(void) {
     change_sov_span(true, s1);
     // print_sov(s1);
 
-    assert(is_set_empty(s1));
+    assert(is_sov_empty(s1));
     assert(!contains_vector(v1, s1));
 
-    add_to_set(v1, s1);
-    add_to_set(v2, s1);
-    add_to_set(v3, s1);
-    add_to_set(v1, s1);
+    add_to_sov(v1, s1);
+    add_to_sov(v2, s1);
+    add_to_sov(v3, s1);
+    add_to_sov(v1, s1);
     // print_sov(s1);
 
     assert(contains_vector(v1, s1));
@@ -37,18 +37,18 @@ int main(void) {
 
     struct sov *s3 = sov_create();
     change_sov_span(true, s3);
-    add_to_set(v1, s3);
-    add_to_set(v3, s3);
-    add_to_set(v2, s3);
-    add_to_set(v1, s3);
+    add_to_sov(v1, s3);
+    add_to_sov(v3, s3);
+    add_to_sov(v2, s3);
+    add_to_sov(v1, s3);
     // print_sov(s3);
     assert(vectors_sets_equal(s1, s3));
 
-    assert(!remove_from_set(v4, s1));
-    assert(remove_from_set(v1, s1));
-    assert(remove_from_set(v2, s1));
-    assert(remove_from_set(v3, s1));
-    assert(!remove_from_set(v2, s1));
+    assert(!remove_from_sov(v4, s1));
+    assert(remove_from_sov(v1, s1));
+    assert(remove_from_sov(v2, s1));
+    assert(remove_from_sov(v3, s1));
+    assert(!remove_from_sov(v2, s1));
     // print_sov(s1);
 
     // a set of 3D vectors
@@ -60,16 +60,16 @@ int main(void) {
     struct vector *v7 = vector_create(3, g);
 
     struct sov *s4 = sov_create();
-    assert(is_set_empty(s4));
+    assert(is_sov_empty(s4));
 
-    add_to_set(v5, s4);
-    add_to_set(v6, s4);
-    add_to_set(v7, s4);
+    add_to_sov(v5, s4);
+    add_to_sov(v6, s4);
+    add_to_sov(v7, s4);
     // print_sov(s4);
 
-    assert(remove_from_set(v5, s4));
-    assert(remove_from_set(v6, s4));
-    assert(remove_from_set(v7, s4));
+    assert(remove_from_sov(v5, s4));
+    assert(remove_from_sov(v6, s4));
+    assert(remove_from_sov(v7, s4));
     // print_sov(s4);
 
     sov_destroy(s1);

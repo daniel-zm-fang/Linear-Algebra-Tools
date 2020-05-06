@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-// This is the implementation for matrix operations
+// This is the implementation of functions of matrix operations
 // See matrix_operations.h for documentation of functions
 
 struct matrix *matrix_add(const struct matrix *m1, const struct matrix *m2) {
@@ -53,7 +53,7 @@ struct vector *matrix_vector_mult(const struct matrix *m, const struct vector *v
     assert(v);
     assert(m);
     assert(num_aug_cols(m) == 0);
-    assert(get_dimension(v) == num_cols(m));
+    assert(get_vector_dimension(v) == num_cols(m));
     double *a = malloc(num_rows(m) * sizeof(double));
     for (int i = 0; i < num_rows(m); ++i) {
         a[i] = 0;
