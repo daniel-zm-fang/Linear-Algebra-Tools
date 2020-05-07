@@ -53,6 +53,22 @@ double matrix_get_val(int r, int c, const struct matrix *m) {
     return m->data[r][c];
 }
 
+void matrix_set_val(int r, int c, const struct matrix *m, double val) {
+    assert(m);
+    assert(0 <= r);
+    assert(r < m->row);
+    assert(0 <= c);
+    assert(c < m->col);
+    m->data[r][c] = val;
+}
+
+double *get_row_ptr(int r, const struct matrix *m) {
+    assert(m);
+    assert(r >= 0);
+    assert(r < m->row);
+    return m->data[r];
+}
+
 struct vector *get_row(int r, const struct matrix *m) {
     assert(m);
     assert(r >= 0);
@@ -196,29 +212,18 @@ struct matrix *matrix_copy(const struct matrix *m) {
     return new_m;
 }
 
-// swap_rows(a, b, n) swap the locations of two rowsof length n of a matrix
-// requires: a and b are not NULL pointers
-//           n > 0
-// effects: may modify *a and *b
-// time: O(n)
-
-static void swap_rows(double *a, double *b, int n) {
+void swap_rows(double *a, double *b, int col) {
     assert(a);
     assert(b);
-    assert(n);
-    for (int i = 0; i < n; ++i) {
+    assert(col);
+    for (int i = 0; i < col; ++i) {
         double temp = a[i];
         a[i] = b[i];
         b[i] = temp;
     }
 }
 
-// zero_row(r, m) returns true if a specified row in the matrix contains all zero
-// requires: m is not a NULL pointer
-//           0 <= r < m->row
-// time: O(c)
-
-static bool zero_row(int r, const struct matrix *m) {
+bool zero_row(int r, const struct matrix *m) {
     assert(m);
     assert(r >= 0);
     assert(r < m->row);
@@ -280,7 +285,6 @@ void gauss_jordan_elimination(struct matrix *m) {
                     }
                 }
                 nonzero_col += count;
-                ;
                 curr_row += 1;
                 continue;
             }
@@ -319,6 +323,7 @@ void gauss_jordan_elimination(struct matrix *m) {
 }
 
 void move_zero_rows_bottom(struct matrix *m) {
+    assert(m);
     int num_zero_rows = 0;
     for (int i = 0; i < m->row - num_zero_rows; ++i) {
         int bot_row = m->row - 1 - num_zero_rows;

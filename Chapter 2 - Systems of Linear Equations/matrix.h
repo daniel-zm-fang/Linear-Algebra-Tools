@@ -34,6 +34,19 @@ int num_aug_cols(const struct matrix *m);
 // time: O(1)
 double matrix_get_val(int r, int c, const struct matrix *m);
 
+//matrix_set_val(r, c, m, val) set a entry of a matrix to be a value
+// requires: m is not a NULL pointer
+//           0 <= r < m->row
+//           0 <= c < m->col
+// time: O(1)
+void matrix_set_val(int r, int c, const struct matrix *m, double val);
+
+// get_row_ptr(r, m) returns a pointer to a specified row of a matrix
+// requires: m is not a NULL pointer
+//           0 <= r < m->row
+// time: O(1)
+double *get_row_ptr(int r, const struct matrix *m);
+
 // get_row(r, m) returns a row of m at a specified location; returns NULL if the
 //  requested row does not exist
 // requires: m is not a NULL pointer
@@ -44,7 +57,7 @@ struct vector *get_row(int r, const struct matrix *m);
 
 // get_col(c, m) returns a column of m at a specified location; returns NULL if the
 //  requested column does not exist
-// requires: c is not a NULL pointer
+// requires: m is not a NULL pointer
 //           0 <= c < m->col
 // effects: allocates memory (client must call vector_destroy)
 // time: O(1)
@@ -96,6 +109,19 @@ struct matrix *identity_matrix(int width);
 // effects: allocates memory (client must call matrix_destroy)
 // time: O(r * c)
 struct matrix *matrix_copy(const struct matrix *m);
+
+// swap_rows(a, b, col) swap the locations of two rows of length n of a matrix
+// requires: a and b are not NULL pointers
+//           n > 0
+// effects: may modify *a and *b
+// time: O(c)
+void swap_rows(double *a, double *b, int col);
+
+// zero_row(r, m) returns true if a specified row in the matrix contains all zero
+// requires: m is not a NULL pointer
+//           0 <= r < m->row
+// time: O(c)
+bool zero_row(int r, const struct matrix *m);
 
 // gauss_jordan_elimination(m) reduces a matrix to its RREF form using the
 //  Gauss-Jordan Elimination algorithm

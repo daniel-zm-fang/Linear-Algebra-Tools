@@ -1,6 +1,6 @@
 // This is a simple test for the elementary matrices module
 
-#include "Chapter 5/elementary_matrices.h"
+#include "elementary_matrices.h"
 #include <assert.h>
 #include <stdio.h>
 

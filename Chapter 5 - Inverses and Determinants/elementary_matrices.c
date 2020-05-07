@@ -2,6 +2,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
+// This is the implementation of functions of elementary matrices
+// See elementary_matrices.h for documentations
+
 int is_elementary_matrix(const struct matrix *m) {
     assert(m);
     assert(num_aug_cols(m) == 0);
