@@ -35,6 +35,7 @@ struct vector *coord_vector_wrt_basis_of_matrices(const struct matrix *m, const 
     assert(c > 0);
     assert(r == num_rows(get_matrix(0, s)));
     assert(c == num_cols(get_matrix(0, s)));
+    assert(num_aug_cols(m) == 0);
     assert(is_som_basis(s, r, c));
 
     struct matrix *temp = som_to_matrix(s);

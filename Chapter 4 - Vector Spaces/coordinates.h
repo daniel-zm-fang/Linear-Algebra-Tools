@@ -18,11 +18,12 @@
 struct vector *coord_vector_wrt_basis_of_vectors(const struct vector *v, const struct sov *s);
 
 // coord_vector_wrt_basis_of_matrices(m, s) returns the coordinate
-// vector of m with respect to a basis of matrices
+//  vector of m with respect to a basis of matrices
 // requires: m and s are not NULL pointers
 //           s is not empty
 //           r and c of m > 0
 //           r and c of m == r and c of s of matrices in s
+//           m is not an augmented matrix
 //           s is a basis of M r*c (R)
 // effects: allocates memory (client must call matrix_destroy)
 // time: O(r * c * n * min(r * c, n))

@@ -159,6 +159,23 @@ void add_col(const struct vector *v, struct matrix *m) {
     m->col += 1;
 }
 
+struct matrix *identity_matrix(int width) {
+    assert(width);
+    struct matrix *m = matrix_create();
+    for (int i = 0; i < width; ++i) {
+        double *a = malloc(width * sizeof(double));
+        for (int j = 0; j < width; ++j) {
+            if (i == j) {
+                a[j] = 1;
+            } else {
+                a[j] = 0;
+            }
+        }
+        add_row(vector_create(width, a), m);
+    }
+    return m;
+}
+
 struct matrix *matrix_copy(const struct matrix *m) {
     assert(m);
     struct matrix *new_m = malloc(sizeof(struct matrix));
@@ -365,7 +382,8 @@ bool is_rref(const struct matrix *m) {
 
 int get_rank(const struct matrix *m) {
     assert(m);
-    assert(is_rref(m));
+    struct matrix *temp = matrix_copy(m);
+    gauss_jordan_elimination(temp);
     int rank = 0;
     for (int i = 0; i < m->row; ++i) {
         if (zero_row(i, m)) {
@@ -373,13 +391,17 @@ int get_rank(const struct matrix *m) {
         }
         rank += 1;
     }
+    matrix_destroy(temp);
     return rank;
 }
 
 int get_free_var(const struct matrix *m) {
     assert(m);
-    assert(is_rref(m));
-    return m->col - m->augmented_col - get_rank(m);
+    struct matrix *temp = matrix_copy(m);
+    gauss_jordan_elimination(temp);
+    int free_var = temp->col - temp->augmented_col - get_rank(temp);
+    matrix_destroy(temp);
+    return free_var;
 }
 
 bool is_col_free_var(int c, const struct matrix *m) {
@@ -537,4 +559,14 @@ void matrix_destroy(struct matrix *m) {
     free(m->data);
     free(m);
     m = NULL;
+}
+
+void matrix_destroy_keep_ptr(struct matrix *m) {
+    assert(m);
+    for (int i = 0; i < m->max_row; ++i) {
+        free(m->data[i]);
+        m->data[i] = NULL;
+    }
+    free(m->data);
+    free(m);
 }

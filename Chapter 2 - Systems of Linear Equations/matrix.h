@@ -85,6 +85,12 @@ void add_row(const struct vector *v, struct matrix *m);
 // time: O(r) [amoritized]
 void add_col(const struct vector *v, struct matrix *m);
 
+// identity_matrix(width) returns an identity matrix of width * width
+// requires: width > 0
+// effects: allocates memory (client must call matrix_destroy)
+// time: O(width ^ 2)
+struct matrix *identity_matrix(int width);
+
 // matrix_copy(m) returns a deep copy of a given matrix
 // requires: m is not a NULL pointer
 // effects: allocates memory (client must call matrix_destroy)
@@ -112,20 +118,18 @@ bool is_rref(const struct matrix *m);
 
 // get_rank(m) returns the rank of an rref matrix
 // requries: m is not a NULL pointer
-//           m is in RREF
-// time: O(r * c)
+// time: O(r * c * min(r, c))
 int get_rank(const struct matrix *m);
 
 // get_free_var(m) returns the number of free variables of an rref matrix
 // requries: m is not a NULL pointer
-//           m is in RREF
-// time: O(r * c)
+// time: O(r * c * min(r, c))
 int get_free_var(const struct matrix *m);
 
 // is_col_free_var(c, m) returns true if a specified column of a matrix is a free variable
 // requires: m is not a NULL pointer
 //           0 < c < m->col
-//           m is in
+//           m is in RREF
 // time: O(r * c)
 bool is_col_free_var(int c, const struct matrix *m);
 
@@ -161,3 +165,8 @@ void print_matrix(const struct matrix *m);
 // effects: m is no longer valid
 // time: O(r)
 void matrix_destroy(struct matrix *m);
+
+// matrix_destroy(m) frees all memory for m but m is still valid
+// effects: may modify m
+// time: O(r)
+void matrix_destroy_keep_ptr(struct matrix *m);
