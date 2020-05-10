@@ -6,7 +6,8 @@ This library is built using the concepts from [CS 136](https://www.student.cs.uw
 Each section consists of 3 files with the same name: an implementation file (.c), an interface file (.h), and a test file (starts with test-). Most tests are from the examples and section problems in the textbook.
 
 Thanks for checking out Linear Algebra Tools!
-Dev tem: Daniel Fang and Andy Zhu
+
+Dev team: Daniel Fang and Andy Zhu
 
 <br></br>
 ***
