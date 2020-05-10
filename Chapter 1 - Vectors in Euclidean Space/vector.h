@@ -34,6 +34,12 @@ bool is_zero_vector(const struct vector *v);
 // time: O(n)
 bool vectors_equal(const struct vector *v1, const struct vector *v2);
 
+// are_vectors_scalar_multiples(v1, v2) returns true if the two vectors are
+//  scalar multiple of each other
+// requires: v1 and v2 are not NULL pointers
+// time: O(n)
+bool are_vectors_scalar_multiples(const struct vector *v1, const struct vector *v2);
+
 // add(v1, v2) returns a vector with the result of adding v1 and v2
 // requires: v1 and v2 are not NULL pointers
 //           v1 and v2 have the same dimension

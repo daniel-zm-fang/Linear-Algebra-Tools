@@ -60,6 +60,37 @@ bool vectors_equal(const struct vector *v1, const struct vector *v2) {
     }
 }
 
+bool are_vectors_scalar_multiples(const struct vector *v1, const struct vector *v2) {
+    assert(v1);
+    assert(v2);
+    int dimension = get_vector_dimension(v1);
+    if (dimension != get_vector_dimension(v2)) {
+        return false;
+    }
+    if (is_zero_vector(v1) || is_zero_vector(v2)) {
+        return true;
+    }
+    double ratio = 0;
+    bool flag = true;
+    for (int i = 0; i < dimension; i++) {
+        if (vector_get_val(i, v2) == 0) {
+            if (vector_get_val(i, v1) != 0) {
+                return false;
+            } else {
+                continue;
+            }
+        }
+        if (flag) {
+            ratio = vector_get_val(i, v1) / vector_get_val(i, v2);
+            flag = false;
+        }
+        if (ratio != vector_get_val(i, v1) / vector_get_val(i, v2)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 struct vector *add(const struct vector *v1, const struct vector *v2) {
     assert(v1);
     assert(v2);
